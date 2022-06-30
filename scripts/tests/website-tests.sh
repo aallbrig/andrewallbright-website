@@ -39,10 +39,6 @@ check_website_alive() {
 check_website_is_fast_enough() {
   expected_timing_in_seconds=10
   for url in "${urls[@]}" ; do
-    # 1rst %s: pass or fail + test count number
-    # 2nd %s: url
-    # 3rd %s: actual timing (in seconds)
-    # 4th %s: pass/fail specific text
     raw_timing_of_request=$(/usr/bin/time -h -p curl --silent --output /dev/null "${url}" &> /dev/stdout)
     [[ -n "${DEBUG}" ]] && echo "timing of command:"
     [[ -n "${DEBUG}" ]] && echo "${raw_timing_of_request}"
