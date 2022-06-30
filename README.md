@@ -7,6 +7,8 @@ This source code is how I develop and operate my personal website.
 ## Development
 ```bash
 # run all test scripts (see relevant scripts/tests/*.sh files)
+./scripts/all-build.sh
+./scripts/start-local-environment.sh
 ./scripts/all-tests.sh
 ```
 
