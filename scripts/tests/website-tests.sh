@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 
-message=""
 # time vs /usr/bin/time
 # https://superuser.com/questions/112353/how-can-i-give-arguments-to-time-command-ubuntu
-dependencies=(curl /usr/bin/time)
+dependencies=(bc curl /usr/bin/time)
 urls=("https://andrewallbright.com" "https://www.andrewallbright.com")
-
 
 check_script_dependencies() {
   # ☑️ Script dependencies are found
@@ -19,27 +17,44 @@ check_script_dependencies() {
 
 check_website_alive() {
   for url in "${urls[@]}" ; do
-    message="Health of ${url}"
-    if curl "${url}" &> /dev/null ; then
-      message="✅ $((++test_counter)) ${message}"
+    status_code=$( \
+      curl \
+        --head \
+        --location \
+        --silent \
+        --output /dev/null \
+        --write-out "%{http_code}" \
+        "${url}" \
+      2> /dev/null \
+    )
+    [[ -n "${DEBUG}" ]] && echo "http status code: ${status_code}"
+    if [[ "${status_code}" -gt 200 ]] && [[ "${status_code}" -lt 300 ]] ; then
+      echo "✅ $((++test_counter)) ${url} is alive and healthy (request status code ${status_code})"
     else
-      message="❌ $((++test_counter)) ${message}"
+      echo "❌ $((++test_counter)) ${url} is not alive and healthy (request status code ${status_code})"
     fi
-    echo "${message}"
   done
 }
 
 check_website_is_fast_enough() {
+  expected_timing_in_seconds=10
   for url in "${urls[@]}" ; do
-    message="Checking performance of ${url}"
-    timing=$(/usr/bin/time -h curl "${url}" &> /dev/null)
-    echo "${timing}"
-    if false ; then
-      message="✅ $((++test_counter)) ${message}"
+    # 1rst %s: pass or fail + test count number
+    # 2nd %s: url
+    # 3rd %s: actual timing (in seconds)
+    # 4th %s: pass/fail specific text
+    raw_timing_of_request=$(/usr/bin/time -h -p curl --silent --output /dev/null "${url}" &> /dev/stdout)
+    [[ -n "${DEBUG}" ]] && echo "timing of command:"
+    [[ -n "${DEBUG}" ]] && echo "${raw_timing_of_request}"
+
+    time_in_seconds=$(echo "${raw_timing_of_request}" | grep 'real' | awk '{ print $2 }' | bc -l)
+    [[ -n "${DEBUG}" ]] && echo "total time in seconds: ${time_in_seconds}"
+
+    if (( $(echo "${expected_timing_in_seconds} > ${time_in_seconds}" | bc -l) )) ; then
+      echo "✅ $((++test_counter)) ${url} time of ${time_in_seconds} meets expected time of ${expected_timing_in_seconds} seconds"
     else
-      message="❌ $((++test_counter)) ${message}"
+      echo "❌ $((++test_counter)) ${url} time of ${time_in_seconds} FAILS to meet expected time of ${expected_timing_in_seconds} seconds"
     fi
-    echo "${message}"
   done
 }
 

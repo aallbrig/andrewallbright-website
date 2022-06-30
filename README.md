@@ -5,6 +5,10 @@ This source code is how I develop and operate my personal website.
 ### [AndrewAllbright.com](https://andrewallbright.com)
 
 ## Development
+```bash
+# run all test scripts (see relevant scripts/tests/*.sh files)
+./scripts/all-tests.sh
+```
 
 ### Tech Stack
 1. [ ] Terraform
