@@ -1,0 +1,18 @@
+version: '3'
+services:
+  website_nginx:
+    build:
+      context: ${PWD}
+      dockerfile: ${PWD}/docker/website-wordpress-ec2/Dockerfile
+    command:
+      - /entrypoint.sh
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - type: bind
+        source: ${PWD}/nginx/etc/nginx/conf.d/andrewallbright-wordpress-website.conf
+        target: /etc/nginx/conf.d/andrewallbright-wordpress-website.conf
+      - type: bind
+        source: ${PWD}/nginx/usr/share/nginx/wordpress
+        target: /usr/share/nginx/wordpress
