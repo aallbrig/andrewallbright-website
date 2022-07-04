@@ -11,8 +11,17 @@ services:
       - "8443:443"
     volumes:
       - type: bind
-        source: ${PWD}/nginx/etc/nginx/conf.d/andrewallbright-wordpress-website.conf
-        target: /etc/nginx/conf.d/andrewallbright-wordpress-website.conf
+        source: ${PWD}/nginx/etc/nginx/nginx.conf
+        target: /etc/nginx/nginx.conf
+      - type: bind
+        source: ${PWD}/nginx/etc/nginx/conf.d
+        target: /etc/nginx/conf.d
+      - type: bind
+        source: ${PWD}/php-fpm/etc/php-fpm.conf
+        target: /etc/php-fpm.conf
+      - type: bind
+        source: ${PWD}/php-fpm/etc/php-fpm.d
+        target: /etc/php-fpm.d
       - type: bind
         source: ${PWD}/nginx/usr/share/nginx/wordpress
         target: /usr/share/nginx/wordpress

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-dependencies=(nginx php)
+dependencies=(nginx php-fpm)
 
 check_script_dependencies() {
   # ☑️ Script dependencies are found
@@ -13,16 +13,18 @@ check_script_dependencies() {
 }
 
 start_php_interpreter() {
-  php -v
+  php-fpm
 }
 
 start_nginx_server() {
-  # initialize nginx
   nginx
 }
 
-follow_all_log_files() {
-  tail -f /var/log/nginx/access.log /var/log/nginx/error.log
+follow_all_log_files_forever() {
+  tail -f \
+    /var/log/nginx/access.log \
+    /var/log/nginx/error.log \
+    /var/log/php-fpm/error.log
 }
 
 sleep_forever() {
@@ -30,7 +32,7 @@ sleep_forever() {
 }
 
 run_forever() {
-  follow_all_log_files
+  follow_all_log_files_forever
 }
 
 main() {
@@ -38,8 +40,7 @@ main() {
   start_php_interpreter
   start_nginx_server
 
-  # or until process kill
-  run_forever
+  run_forever # or until process kill
 }
 
 main

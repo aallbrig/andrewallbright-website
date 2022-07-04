@@ -2,7 +2,6 @@
 FROM amazonlinux:latest
 
 RUN amazon-linux-extras install -y nginx1 php7.4
-RUN amazon-linux-extras enable -y nginx1 php7.4
 
 # Below appropriate for entrypoint script?
 # Install wordpress
@@ -12,10 +11,16 @@ RUN amazon-linux-extras enable -y nginx1 php7.4
 ADD docker/website-wordpress-ec2/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+COPY nginx/etc/nginx/conf.d /etc/nginx/conf.d
+COPY nginx/usr/share/nginx/wordpress /usr/share/nginx/wordpress
+
+RUN chown -R nginx:nginx /usr/share/nginx/*
+
+COPY php-fpm/etc/php-fpm.conf /etc/php-fpm.conf
+COPY php-fpm/etc/php-fpm.d /etc/php-fpm.d
+
 EXPOSE 80 443
-VOLUME ["/usr/share/nginx/wordpress", "/etc/nginx/conf.d"]
+VOLUME ["/usr/share/nginx/wordpress", "/etc/php-fpm.conf", "/etc/php-fpm.d", "/etc/nginx/conf.d"]
 
-RUN chown nginx:nginx /usr/share/nginx/*
-
-ENTRYPOINT ["/bin/bash", "-c"]
-CMD ["/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash"]
+CMD ["-c", "/entrypoint.sh"]
