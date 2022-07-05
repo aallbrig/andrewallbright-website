@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-dependencies=(nginx php-fpm)
+dependencies=(nginx php-fpm mysqld_safe)
 
 check_script_dependencies() {
   # ☑️ Script dependencies are found
@@ -20,11 +20,16 @@ start_nginx_server() {
   nginx
 }
 
+start_mariadb() {
+  mysqld_safe
+}
+
 follow_all_log_files_forever() {
   tail -f \
     /var/log/nginx/access.log \
     /var/log/nginx/error.log \
-    /var/log/php-fpm/error.log
+    /var/log/php-fpm/error.log \
+    /var/log/mariadb/mariadb.log
 }
 
 sleep_forever() {
@@ -37,6 +42,7 @@ run_forever() {
 
 main() {
   check_script_dependencies
+  start_mariadb
   start_php_interpreter
   start_nginx_server
 

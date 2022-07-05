@@ -23,5 +23,5 @@ services:
         source: ${PWD}/php-fpm/etc/php-fpm.d
         target: /etc/php-fpm.d
       - type: bind
-        source: ${PWD}/nginx/usr/share/nginx/wordpress
-        target: /usr/share/nginx/wordpress
+        source: ${PWD}/nginx/usr/share/nginx/andrewallbright-wordpress
+        target: /usr/share/nginx/andrewallbright-wordpress
