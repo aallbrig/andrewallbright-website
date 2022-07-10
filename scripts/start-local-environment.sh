@@ -1,6 +1,11 @@
 fresh_dev_environment() {
-  docker-compose --file docker-compose/local-stack.yaml build
-  docker-compose --file docker-compose/local-stack.yaml up --detach
+  if command -v docker-compose ; then
+    docker-compose --file docker-compose/local-stack.yaml build
+    docker-compose --file docker-compose/local-stack.yaml up --detach
+  elif command -v docker compose ; then
+    docker compose --file docker-compose/local-stack.yaml build
+    docker compose --file docker-compose/local-stack.yaml up --detach
+  fi
 }
 
 notify_user_of_available_http_urls() {
