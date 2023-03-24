@@ -1,0 +1,60 @@
+Parameters:
+  YourIPAddress:
+    Type: String
+    Description: Your IP address for SSH access
+  DatabaseUsername:
+    Type: String
+    Description: Desired database username
+  DatabasePassword:
+    Type: String
+    NoEcho: true
+    Description: Desired database password
+  DatabaseName:
+    Type: String
+    Description: Desired database name
+
+Resources:
+  WordPressApplication:
+    Type: AWS::ElasticBeanstalk::Application
+    Properties:
+      Description: Elastic Beanstalk Application for WordPress
+
+  WordPressEnvironment:
+    Type: AWS::ElasticBeanstalk::Environment
+    Properties:
+      ApplicationName: !Ref WordPressApplication
+      Description: Elastic Beanstalk Environment for WordPress
+      SolutionStackName: "64bit Amazon Linux 2 v3.3.2 running PHP 7.4"
+      OptionSettings:
+        - Namespace: aws:autoscaling:launchconfiguration
+          OptionName: InstanceType
+          Value: t2.micro
+        - Namespace: aws:autoscaling:launchconfiguration
+          OptionName: SSHSourceRestriction
+          Value: !Sub "tcp, 22, 22, ${YourIPAddress}/32"
+        - Namespace: aws:elasticbeanstalk:environment
+          OptionName: EnvironmentType
+          Value: SingleInstance
+        - Namespace: aws:elasticbeanstalk:application
+          OptionName: Application Healthcheck URL
+          Value: /wp-admin/install.php
+        - Namespace: aws:rds:dbinstance
+          OptionName: DBEngine
+          Value: mariadb
+        - Namespace: aws:rds:dbinstance
+          OptionName: DBInstanceClass
+          Value: db.t2.micro
+        - Namespace: aws:rds:dbinstance
+          OptionName: DBUser
+          Value: !Ref DatabaseUsername
+        - Namespace: aws:rds:dbinstance
+          OptionName: DBPassword
+          Value: !Ref DatabasePassword
+        - Namespace: aws:rds:dbinstance
+          OptionName: DBName
+          Value: !Ref DatabaseName
+
+Outputs:
+  URL:
+    Description: URL of the WordPress website
+    Value: !GetAtt WordPressEnvironment.EndpointURL
