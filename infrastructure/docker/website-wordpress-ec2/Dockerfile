@@ -1,5 +1,5 @@
 # Expectation: Amazon linux is the target OS of the andrew allbright website.
-FROM amazonlinux:latest
+FROM amazonlinux:2.0.20230912.0
 
 RUN amazon-linux-extras install -y nginx1 php7.4 mariadb10.5
 
@@ -21,7 +21,7 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
     && chmod +x wp-cli.phar \
     && mv wp-cli.phar /usr/local/bin/wp
 
-ADD docker/website-wordpress-ec2/entrypoint.sh /entrypoint.sh
+ADD entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 80 443

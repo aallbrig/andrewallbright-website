@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-docker build -f ./docker/website-wordpress-ec2/Dockerfile -t andrewallbright-website .
+docker build -f ./infrastructure/docker/website-wordpress-ec2/Dockerfile -t andrewallbright-website ./infrastructure/docker/website-wordpress-ec2
