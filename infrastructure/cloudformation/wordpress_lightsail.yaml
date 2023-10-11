@@ -1,0 +1,11 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: This template deploys a WordPress site on AWS Lightsail
+
+Resources:
+    WordpressInstance:
+        Type: AWS::Lightsail::Instance
+        Properties:
+          AvailabilityZone: us-east-2a
+          BlueprintId: wordpress
+          BundleId: nano_3_0
+          InstanceName: WebsiteWordpressInstance
