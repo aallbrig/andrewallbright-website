@@ -9,3 +9,9 @@ variable "hosted_zone_name" {
   type = string
   default = "andrewallbright.com"
 }
+
+variable "region" {
+  description = "The region to deploy to"
+  type = string
+  default = "us-east-2"
+}
