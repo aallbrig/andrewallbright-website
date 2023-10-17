@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to create a public subnet
+
+Parameters:
+  VpcId:
+    Description: 'VPC ID where the subnet will be created'
+    Type: 'AWS::EC2::VPC::Id'
+    ConstraintDescription: Must be a valid VPC ID.
+
+  PublicCidrBlock:
+    Description: 'CIDR block for the public subnet'
+    Type: 'String'
+    Default: '10.0.2.0/27'
+    ConstraintDescription: Must be a valid CIDR block.
+
+Resources:
+  PublicSubnet:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VpcId
+      CidrBlock: !Ref PublicCidrBlock
+      MapPublicIpOnLaunch: true
+
+Outputs:
+  SubnetId:
+    Description: 'ID of the created public subnet'
+    Value: !Ref PublicSubnet
+    Export:
+      Name: PublicSubnetId
+
+  SubnetAvailabilityZone:
+    Description: 'Availability Zone of the created public subnet'
+    Value: !GetAtt PublicSubnet.AvailabilityZone
+    Export:
+      Name: PublicSubnetAvailabilityZone
+
+  SubnetCidrBlock:
+    Description: 'CIDR Block of the created public subnet'
+    Value: !GetAtt PublicSubnet.CidrBlock
+    Export:
+      Name: PublicSubnetCidrBlock
+
+  SubnetVpcId:
+    Description: 'VPC ID where the subnet resides'
+    Value: !Ref VpcId
+    Export:
+      Name: PublicSubnetVpcId

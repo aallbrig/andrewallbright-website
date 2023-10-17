@@ -1,11 +1,49 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: This template deploys a WordPress site on AWS Lightsail
 
+Parameters:
+  InstanceName:
+    Description: 'Name for the Lightsail instance'
+    Type: 'String'
+    Default: 'WebsiteWordpressLightsailInstance'
+
+  InstanceBlueprint:
+    Description: 'Blueprint ID for the Lightsail instance (e.g., amazon_linux, wordpress, etc.)'
+    Type: 'String'
+    Default: 'wordpress'
+
+  InstanceBundle:
+    Description: 'Bundle ID for the Lightsail instance (e.g., nano_2_0, micro_2_0, etc.)'
+    Type: 'String'
+    Default: 'nano_3_0'
+
+  AvailabilityZone:
+    Description: 'Availability Zone for the Lightsail instance (e.g., us-east-2a)'
+    Type: 'String'
+    Default: 'us-east-2a'
+
 Resources:
-    WordpressInstance:
+    WordpressLightsailInstance:
         Type: AWS::Lightsail::Instance
         Properties:
-          AvailabilityZone: us-east-2a
-          BlueprintId: wordpress
-          BundleId: nano_3_0
-          InstanceName: WebsiteWordpressInstance
+          AvailabilityZone: !Ref AvailabilityZone
+          BlueprintId: !Ref InstanceBlueprint
+          BundleId: !Ref InstanceBundle
+          InstanceName: !Ref InstanceName
+
+Outputs:
+  LightsailInstanceName:
+    Description: 'Name of the Lightsail instance'
+    Value: !Ref InstanceName
+
+  LightsailInstancePublicIpAddress:
+    Description: 'Public IP Address of the Lightsail instance'
+    Value: !GetAtt WordpressLightsailInstance.PublicIpAddress
+
+  LightsailInstancePrivateIpAddress:
+    Description: 'Private IP Address of the Lightsail instance'
+    Value: !GetAtt WordpressLightsailInstance.PrivateIpAddress
+
+  LightsailInstanceResourceType:
+    Description: 'Resource type of the Lightsail instance'
+    Value: !GetAtt WordpressLightsailInstance.ResourceType
