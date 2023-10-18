@@ -13,13 +13,13 @@ Parameters:
     Type: 'String'
 
   RecordName:
-    Description: 'The name of the A record (e.g., www.example.com.)'
+    Description: 'The name of the apex A record (e.g., example.com.)'
     Type: 'String'
     AllowedPattern: '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$'
-    ConstraintDescription: 'Must be a valid DNS name format (e.g., www.example.com.)'
+    ConstraintDescription: 'Must be a valid DNS name format (e.g., example.com.)'
 
 Resources:
-  MyARecord:
+  ApexARecord:
     Type: 'AWS::Route53::RecordSet'
     Properties:
       HostedZoneId: !Ref HostedZoneId
@@ -29,7 +29,17 @@ Resources:
       ResourceRecords:
         - !Ref IPAddress
 
+  WwwARecord:
+    Type: 'AWS::Route53::RecordSet'
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Sub "www.${RecordName}"
+      Type: 'A'
+      TTL: '300'
+      ResourceRecords:
+        - !Ref IPAddress
+
 Outputs:
   RecordSetId:
     Description: 'The ID of the created record set'
-    Value: !Ref MyARecord
+    Value: "ApexARecord"

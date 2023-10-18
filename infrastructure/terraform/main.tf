@@ -5,7 +5,9 @@ resource "aws_cloudformation_stack" "wordpress_networking" {
 
   parameters = {
     VpcId = data.aws_vpc.default_vpc.id
-    PublicCidrBlock = local.public_wordpress_subnet_cidr
+    WebTierCidrBlock = local.web_tier_subnet_cidr
+    ApplicationTierCidrBlock = local.application_tier_subnet_cidr
+    DataTierCidrBlock = local.data_tier_subnet_cidr
   }
 }
 

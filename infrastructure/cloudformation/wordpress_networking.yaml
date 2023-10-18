@@ -7,41 +7,59 @@ Parameters:
     Type: 'AWS::EC2::VPC::Id'
     ConstraintDescription: Must be a valid VPC ID.
 
-  PublicCidrBlock:
+  WebTierCidrBlock:
     Description: 'CIDR block for the public subnet'
     Type: 'String'
     Default: '10.0.2.0/27'
     ConstraintDescription: Must be a valid CIDR block.
 
+  ApplicationTierCidrBlock:
+    Description: 'CIDR block for the public subnet'
+    Type: 'String'
+    Default: '10.0.3.0/27'
+    ConstraintDescription: Must be a valid CIDR block.
+
+  DataTierCidrBlock:
+    Description: 'CIDR block for the public subnet'
+    Type: 'String'
+    Default: '10.0.4.0/27'
+    ConstraintDescription: Must be a valid CIDR block.
+
 Resources:
-  PublicSubnet:
+  WebTierSubnet:
     Type: 'AWS::EC2::Subnet'
     Properties:
       VpcId: !Ref VpcId
-      CidrBlock: !Ref PublicCidrBlock
+      CidrBlock: !Ref WebTierCidrBlock
       MapPublicIpOnLaunch: true
 
+  ApplicationTierSubnet:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VpcId
+      CidrBlock: !Ref ApplicationTierCidrBlock
+
+  DataTierSubnet:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VpcId
+      CidrBlock: !Ref DataTierCidrBlock
+
 Outputs:
-  SubnetId:
+  WebTierSubnetId:
     Description: 'ID of the created public subnet'
-    Value: !Ref PublicSubnet
+    Value: !Ref WebTierSubnet
     Export:
-      Name: PublicSubnetId
+      Name: WebTierSubnetId
 
-  SubnetAvailabilityZone:
-    Description: 'Availability Zone of the created public subnet'
-    Value: !GetAtt PublicSubnet.AvailabilityZone
+  ApplicationTierSubnetId:
+    Description: 'ID of the created public subnet'
+    Value: !Ref WebTierSubnet
     Export:
-      Name: PublicSubnetAvailabilityZone
+      Name: ApplicationTierSubnetId
 
-  SubnetCidrBlock:
-    Description: 'CIDR Block of the created public subnet'
-    Value: !GetAtt PublicSubnet.CidrBlock
+  DataTierSubnetId:
+    Description: 'ID of the created public subnet'
+    Value: !Ref WebTierSubnet
     Export:
-      Name: PublicSubnetCidrBlock
-
-  SubnetVpcId:
-    Description: 'VPC ID where the subnet resides'
-    Value: !Ref VpcId
-    Export:
-      Name: PublicSubnetVpcId
+      Name: DataTierSubnetId
