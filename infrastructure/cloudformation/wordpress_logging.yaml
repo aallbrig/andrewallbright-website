@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: This template deploys a WordPress site on EC2
+
+Resources:
+  WordpressEc2LogWriterManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'logs:CreateLogGroup'
+            Resource:
+              !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/ec2/wordpress*'
+          - Effect: Allow
+            Action:
+              - 'logs:CreateLogStream'
+              - 'logs:PutLogEvents'
+            Resource:
+              !Sub 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/ec2/wordpress*:log-stream:*'
+      Description: "Policy for allowing wordpress EC2 to write to CloudWatch Logs"
+
+Outputs:
+  WordpressEc2LogWriterManagedPolicy:
+    Description: Cloudwatch log writer policy for wordpress ec2 instance
+    Value: !Ref WordpressEc2LogWriterManagedPolicy
+

@@ -1,0 +1,132 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to create an SSM Parameter Store and attach policy to an existing role.
+
+Parameters:
+  RootNamespace:
+    Description: The root namespace for the SSM Parameter Store.
+    Type: String
+    Default: wordpress
+  DatabaseHost:
+    Description: Hostname of the MySQL/MariaDB database
+    Type: String
+  DatabaseName:
+    Description: The name of the database for wordpress
+    Type: String
+    Default: wordpress
+  DatabaseUsername:
+    Description: The name of the wordpress database user
+    Type: String
+    Default: wpuser
+  WordPressURL:
+    Description: URL for the WordPress site (e.g., your domain or IP)
+    Type: String
+  WordPressTitle:
+    Description: Title of your WordPress site
+    Type: String
+    Default: My WordPress Site
+  WordPressAdminUsername:
+    Description: Name for wordpress admin user
+    Type: String
+  WordPressAdminEmail:
+    Description: WordPress admin email
+    Type: String
+
+Resources:
+  WordpressDatabaseHostParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/${RootNamespace}/wordpress/database/host"
+      Description: Database host for wordpress
+      Type: String
+      Value: !Ref DatabaseHost
+
+  WordpressDatabaseNameParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/${RootNamespace}/wordpress/database/name"
+      Description: Database name for wordpress
+      Type: String
+      Value: !Ref DatabaseName
+
+  WordpressDatabaseUsernameParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/${RootNamespace}/wordpress/database/username"
+      Description: Database username for wordpress
+      Type: String
+      Value: !Ref DatabaseUsername
+
+  WordpressAdminEmailParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/${RootNamespace}/wordpress/admin/email"
+      Description: WordPress admin email
+      Type: String
+      Value: !Ref WordPressAdminEmail
+
+  WordpressAdminUsernameParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/${RootNamespace}/wordpress/admin/username"
+      Description: Name for wordpress admin user
+      Type: String
+      Value: !Ref WordPressAdminUsername
+
+  WordpressURLParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/${RootNamespace}/wordpress/url"
+      Description: URL for the WordPress site (e.g., your domain or IP)
+      Type: String
+      Value: !Ref WordPressURL
+
+  WordpressTitleParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/${RootNamespace}/wordpress/title"
+      Description: Title of your WordPress site
+      Type: String
+      Value: !Ref WordPressTitle
+
+
+  WordpressEc2ConfigAccessManagedPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: "Policy for allowing wordpress EC2 to write to CloudWatch Logs"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'ssm:GetParameter'
+              - 'ssm:GetParameters'
+              - 'ssm:GetParametersByPath'
+            Resource:
+              - !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${RootNamespace}/*
+
+Outputs:
+  WordpressEc2ConfigAccessManagedPolicy:
+    Description: Policy for wordpress ec2 instance to have read access to config
+    Value: !Ref WordpressEc2ConfigAccessManagedPolicy
+
+  WordpressDatabaseHostParameter:
+    Description: The name of the database host parameter.
+    Value: !Ref WordpressDatabaseHostParameter
+  WordpressDatabaseNameParameter:
+    Description: The name of the database name parameter.
+    Value: !Ref WordpressDatabaseNameParameter
+  WordpressDatabaseUsernameParameter:
+    Description: The name of the database username parameter.
+    Value: !Ref WordpressDatabaseUsernameParameter
+  WordpressAdminEmailParameter:
+    Description: The name of the wordpress admin email parameter.
+    Value: !Ref WordpressAdminEmailParameter
+  WordpressAdminUsernameParameter:
+    Description: The name of the wordpress admin username parameter.
+    Value: !Ref WordpressAdminUsernameParameter
+  WordpressURLParameter:
+    Description: The name of the wordpress URL parameter.
+    Value: !Ref WordpressURLParameter
+  WordpressTitleParameter:
+    Description: The name of the wordpress title parameter.
+    Value: !Ref WordpressTitleParameter

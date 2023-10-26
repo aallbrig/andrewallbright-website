@@ -1,0 +1,58 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFront Distribution for WordPress with HTTPS support
+
+Parameters:
+  ApexDomainName:
+    Description: Domain name for your WordPress site (e.g., example.com)
+    Type: String
+  ALBDomainName:
+    Description: The domain name of the ALB (e.g., alb-1234567890.us-west-2.elb.amazonaws.com)
+    Type: String
+  SiteCertificateArn:
+    Description: ARN of the certificate
+    Type: String
+
+Resources:
+  # CloudFront Distribution
+  WordPressCloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: 'true'
+        DefaultRootObject: 'index.php'
+        Aliases:
+          - !Ref ApexDomainName
+          - !Sub "www.${ApexDomainName}"
+        Origins:
+          - DomainName: !Ref ALBDomainName
+            Id: ALBOrigin
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: http-only
+        DefaultCacheBehavior:
+          TargetOriginId: ALBOrigin
+          ForwardedValues:
+            QueryString: 'true'
+            Cookies:
+              Forward: 'whitelist'
+              WhitelistedNames:
+                - 'comment_author_'
+                - 'wordpress_'
+                - 'wp-settings-'
+          AllowedMethods:
+            - 'GET'
+            - 'HEAD'
+            - 'OPTIONS'
+          # ViewerProtocolPolicy: 'redirect-to-https'
+          ViewerProtocolPolicy: 'allow-all'
+          DefaultTTL: '600'
+          Compress: 'true'
+        ViewerCertificate:
+          AcmCertificateArn: !Ref SiteCertificateArn
+          SslSupportMethod: 'sni-only'
+
+Outputs:
+  DistributionId:
+    Description: CloudFront Distribution ID
+    Value: !Ref WordPressCloudFrontDistribution

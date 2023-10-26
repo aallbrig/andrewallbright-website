@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: This template describes a certificate to be used for a wordpress blog (must be deployed in us-east-1)
+
+Parameters:
+  DomainName:
+    Description: Domain name for your WordPress site (e.g., example.com)
+    Type: String
+  HostedZoneId:
+    Description: Route 53 Hosted Zone ID
+    Type: String
+
+Resources:
+  WordpressSiteCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref DomainName
+      ValidationMethod: DNS
+      SubjectAlternativeNames:
+        - !Sub "www.${DomainName}"
+      DomainValidationOptions:
+        - DomainName: !Ref DomainName
+          HostedZoneId: !Ref HostedZoneId
+
+Outputs:
+  WordpressSiteCertificateArn:
+    Description: ARN of the certificate
+    Value: !Ref WordpressSiteCertificate
