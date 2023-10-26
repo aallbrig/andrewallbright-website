@@ -107,21 +107,32 @@ resource "aws_cloudformation_stack" "wordpress_ec2" {
   }
 }
 
+resource "aws_cloudformation_stack" "wordpress_alb_certs" {
+  name = format("%s-%s-%s", var.project_namespace, "wordpress-certificate", var.aws_region)
+
+  template_body = file("${path.module}/../cloudformation/wordpress_certificate.yaml")
+  parameters = {
+    DomainName: data.aws_route53_zone.website_hosted_zone.name
+    HostedZoneId: data.aws_route53_zone.website_hosted_zone.zone_id
+  }
+}
+
 resource "aws_cloudformation_stack" "wordpress_loadbalancer" {
   name = format("%s-%s", var.project_namespace, "wordpress-loadbalancer")
 
   template_body = file("${path.module}/../cloudformation/wordpress_loadbalancer.yaml")
 
   parameters = {
-    VpcId: data.aws_vpc.default_vpc.id,
-    SubnetIds: join(",", [data.aws_subnet.web_tier_subnet_a.id, data.aws_subnet.web_tier_subnet_b.id]),
-    SecurityGroupId: data.aws_security_group.web_tier_sg.id,
+    VpcId: data.aws_vpc.default_vpc.id
+    SubnetIds: join(",", [data.aws_subnet.web_tier_subnet_a.id, data.aws_subnet.web_tier_subnet_b.id])
+    SecurityGroupId: data.aws_security_group.web_tier_sg.id
     EC2InstanceId: data.aws_instance.wordpress_host.id
+    SiteCertificateArn: aws_cloudformation_stack.wordpress_alb_certs.outputs.WordpressSiteCertificateArn
   }
 }
 
-resource "aws_cloudformation_stack" "wordpress_certs" {
-  name = format("%s-%s", var.project_namespace, "wordpress-certificate")
+resource "aws_cloudformation_stack" "wordpress_cdn_certs" {
+  name = format("%s-%s-%s", var.project_namespace, "wordpress-certificate", "us-east-1")
   # certificates just go into us-east-1
   provider = aws.useast1
 
@@ -142,7 +153,7 @@ resource "aws_cloudformation_stack" "wordpress_cdn" {
       data.aws_route53_zone.website_hosted_zone.name,
       format("www.%s", data.aws_route53_zone.website_hosted_zone.name)
     ])
-    SiteCertificateArn: aws_cloudformation_stack.wordpress_certs.outputs.WordpressSiteCertificateArn
+    SiteCertificateArn: aws_cloudformation_stack.wordpress_cdn_certs.outputs.WordpressSiteCertificateArn
   }
 }
 

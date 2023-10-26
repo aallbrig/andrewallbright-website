@@ -17,6 +17,9 @@ Parameters:
   # EC2InstanceIds:
   #   Description: 'EC2 Instance ID to be registered with the ALB'
   #   Type: List<AWS::EC2::Instance::Id>
+  SiteCertificateArn:
+    Description: ARN of the certificate
+    Type: String
   ALBName:
     Description: Name for the Application Load Balancer.
     Type: String
@@ -84,8 +87,11 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       LoadBalancerArn: !Ref WordpressALB
-      Protocol: !Ref ALBProtocol
-      Port: !Ref ALBPort
+      Protocol: HTTPS  # Set to HTTPS
+      Port: 443  # Set to 443 for HTTPS
+      SslPolicy: ELBSecurityPolicy-TLS-1-2-2017-01
+      Certificates:
+        - CertificateArn: !Ref SiteCertificateArn
       DefaultActions:
         - Type: forward
           TargetGroupArn: !Ref WordpressApplicationsTargetGroup
