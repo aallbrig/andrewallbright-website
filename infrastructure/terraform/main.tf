@@ -137,8 +137,11 @@ resource "aws_cloudformation_stack" "wordpress_cdn" {
 
   template_body = file("${path.module}/../cloudformation/wordpress_cdn.yaml")
   parameters = {
-    ApexDomainName: data.aws_route53_zone.website_hosted_zone.name
-    ALBDomainName: data.aws_alb.wordpress_alb.dns_name
+    OriginDomainName: data.aws_alb.wordpress_alb.dns_name
+    Aliases: join(",", [
+      data.aws_route53_zone.website_hosted_zone.name,
+      format("www.%s", data.aws_route53_zone.website_hosted_zone.name)
+    ])
     SiteCertificateArn: aws_cloudformation_stack.wordpress_certs.outputs.WordpressSiteCertificateArn
   }
 }

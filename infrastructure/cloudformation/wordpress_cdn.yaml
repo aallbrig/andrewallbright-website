@@ -2,55 +2,88 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: CloudFront Distribution for WordPress with HTTPS support
 
 Parameters:
-  ApexDomainName:
-    Description: Domain name for your WordPress site (e.g., example.com)
+  OriginDomainName:
+    Description: The origin domain name (e.g. alb-1234567890.us-west-2.elb.amazonaws.com)
     Type: String
-  ALBDomainName:
-    Description: The domain name of the ALB (e.g., alb-1234567890.us-west-2.elb.amazonaws.com)
-    Type: String
+  Aliases:
+    Description: Comma-separated list of aliases for the CloudFront distribution (e.g., www.example.com,example.com)
+    Type: List<String>
   SiteCertificateArn:
     Description: ARN of the certificate
     Type: String
 
 Resources:
-  # CloudFront Distribution
   WordPressCloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:
       DistributionConfig:
-        Enabled: 'true'
-        DefaultRootObject: 'index.php'
-        Aliases:
-          - !Ref ApexDomainName
-          - !Sub "www.${ApexDomainName}"
-        Origins:
-          - DomainName: !Ref ALBDomainName
-            Id: ALBOrigin
-            CustomOriginConfig:
-              HTTPPort: 80
-              HTTPSPort: 443
-              OriginProtocolPolicy: http-only
-        DefaultCacheBehavior:
-          TargetOriginId: ALBOrigin
-          ForwardedValues:
-            QueryString: 'true'
-            Cookies:
-              Forward: 'whitelist'
-              WhitelistedNames:
-                - 'comment_author_'
-                - 'wordpress_'
-                - 'wp-settings-'
-          AllowedMethods:
-            - 'GET'
-            - 'HEAD'
-            - 'OPTIONS'
-          # ViewerProtocolPolicy: 'redirect-to-https'
-          ViewerProtocolPolicy: 'allow-all'
-          DefaultTTL: '600'
-          Compress: 'true'
+        Enabled: true
+        Comment: CloudFront distribution tailored for WordPress on AWS
+        DefaultRootObject: index.php
+        Aliases: !Ref Aliases
         ViewerCertificate:
           AcmCertificateArn: !Ref SiteCertificateArn
           SslSupportMethod: 'sni-only'
+        DefaultCacheBehavior:
+          TargetOriginId: WordPressOrigin
+          ViewerProtocolPolicy: allow-all
+          AllowedMethods: [ GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE ]
+          CachedMethods: [ GET, HEAD ]
+          ForwardedValues:
+            QueryString: true
+            Cookies:
+              Forward: whitelist
+              WhitelistedNames: [ comment_*, wordpress_*, wp-settings_* ]
+            Headers: [ Host, CloudFront-Forwarded-Proto, CloudFront-Is-Mobile-Viewer, CloudFront-Is-Tablet-Viewer, CloudFront-Is-Desktop-Viewer ]
+        Origins:
+          - DomainName: !Ref OriginDomainName
+            Id: WordPressOrigin
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: match-viewer
+        CacheBehaviors:
+          - PathPattern: wp-content/*
+            TargetOriginId: WordPressOrigin
+            ViewerProtocolPolicy: allow-all
+            AllowedMethods: [GET, HEAD]
+            CachedMethods: [GET, HEAD]
+            ForwardedValues:
+              QueryString: true
+              Cookies:
+                Forward: none
+              Headers: []
+          - PathPattern: wp-includes/*
+            TargetOriginId: WordPressOrigin
+            ViewerProtocolPolicy: allow-all
+            AllowedMethods: [GET, HEAD]
+            CachedMethods: [GET, HEAD]
+            ForwardedValues:
+              QueryString: true
+              Cookies:
+                Forward: none
+              Headers: []
+          - PathPattern: wp-admin/*
+            TargetOriginId: WordPressOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE]
+            CachedMethods: [GET, HEAD]
+            ForwardedValues:
+              QueryString: true
+              Cookies:
+                Forward: all
+              Headers: [Host, CloudFront-Forwarded-Proto]
+          - PathPattern: wp-login.php
+            TargetOriginId: WordPressOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods: [GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE]
+            CachedMethods: [GET, HEAD]
+            ForwardedValues:
+              QueryString: true
+              Cookies:
+                Forward: all
+              Headers: [Host, CloudFront-Forwarded-Proto]
+        PriceClass: PriceClass_100
 
 Outputs:
   DistributionId:
