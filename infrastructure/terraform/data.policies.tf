@@ -7,3 +7,9 @@ data "aws_iam_policy" "wordpress-ec2-secrets-access" {
 data "aws_iam_policy" "wordpress-ec2-config-access" {
   arn = aws_cloudformation_stack.wordpress_config.outputs.WordpressEc2ConfigAccessManagedPolicy
 }
+data "aws_iam_policy" "alb-log-streamer" {
+  arn = aws_cloudformation_stack.wordpress_s3.outputs.ALBLogPolicyArn
+}
+data "aws_iam_policy" "cdn-log-streamer" {
+  arn = aws_cloudformation_stack.wordpress_s3.outputs.CloudFrontLogPolicyArn
+}

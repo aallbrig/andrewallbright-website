@@ -1,12 +1,12 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: CloudFormation template for Application Load Balancer.
+Description: CloudFormation template for Application Load Balancer with HTTPS.
 
 Parameters:
   VpcId:
     Description: VPC ID where the ALB will be deployed.
     Type: AWS::EC2::VPC::Id
   SubnetIds:
-    Description: Subnet ID where the ALB will be deployed.
+    Description: Subnet IDs where the ALB will be deployed. Provide at least two for high availability.
     Type: List<AWS::EC2::Subnet::Id>
   SecurityGroupId:
     Description: Security Group ID for the ALB.
@@ -14,11 +14,8 @@ Parameters:
   EC2InstanceId:
     Description: 'EC2 Instance ID to be registered with the ALB'
     Type: AWS::EC2::Instance::Id
-  # EC2InstanceIds:
-  #   Description: 'EC2 Instance ID to be registered with the ALB'
-  #   Type: List<AWS::EC2::Instance::Id>
   SiteCertificateArn:
-    Description: ARN of the certificate
+    Description: ARN of the certificate for HTTPS
     Type: String
   ALBName:
     Description: Name for the Application Load Balancer.
@@ -31,28 +28,6 @@ Parameters:
       - internet-facing
       - internal
     Default: internet-facing
-  ALBProtocol:
-    Description: Protocol for ALB Listener (HTTP or HTTPS).
-    Type: String
-    AllowedValues:
-      - HTTP
-      - HTTPS
-    Default: HTTP
-  ALBPort:
-    Description: Port for ALB Listener.
-    Type: Number
-    Default: 80
-  TargetGroupProtocol:
-    Description: Protocol for ALB Listener (HTTP or HTTPS).
-    Type: String
-    AllowedValues:
-      - HTTP
-      - HTTPS
-    Default: HTTP
-  TargetGroupPort:
-    Description: Port for ALB Listener.
-    Type: Number
-    Default: 80
 
 Resources:
   WordpressALB:
@@ -68,9 +43,9 @@ Resources:
   WordpressApplicationsTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Name: "wordpress-app-tier-tg"
-      Port: !Ref TargetGroupPort
-      Protocol: !Ref TargetGroupProtocol
+      Name: wordpress-app-tier-tg
+      Port: 80
+      Protocol: HTTP
       VpcId: !Ref VpcId
       Targets:
         - Id: !Ref EC2InstanceId
@@ -87,8 +62,8 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       LoadBalancerArn: !Ref WordpressALB
-      Protocol: HTTPS  # Set to HTTPS
-      Port: 443  # Set to 443 for HTTPS
+      Protocol: HTTPS
+      Port: 443
       SslPolicy: ELBSecurityPolicy-TLS-1-2-2017-01
       Certificates:
         - CertificateArn: !Ref SiteCertificateArn
@@ -100,4 +75,3 @@ Outputs:
   ALBArn:
     Description: ARN of the ALB.
     Value: !Ref WordpressALB
-
