@@ -4,39 +4,41 @@ Parameters:
     Type: String
     Description: The name of the S3 bucket for storing logs.
     Default: 'wordpress'
+  ELBAccountId:
+    Type: String
+    Description: A account ID for the relevant region pulled from https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html
+    Default: '033677994240'
 
 Resources:
-  LogBucket:
+  Bucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub "${AWS::AccountId}-${S3BucketName}"
 
-  ALBLogPolicy:
-    Type: AWS::IAM::ManagedPolicy
+  AccessLogsPolicy:
+    Type: AWS::S3::BucketPolicy
     Properties:
-      Description: Policy to allow ALB to write logs
+      Bucket: !Ref Bucket
       PolicyDocument:
-        Version: '2012-10-17'
+        Version: 2012-10-17
         Statement:
           - Effect: Allow
+            Principal:
+              AWS: !Sub "arn:aws:iam::${ELBAccountId}:root"
             Action: s3:PutObject
-            Resource: !Sub 'arn:aws:s3:::${LogBucket}/logs/alb/*'
-
-  CloudFrontLogPolicy:
-    Type: AWS::IAM::ManagedPolicy
-    Properties:
-      Description: Policy to allow CloudFront to write logs
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
+            Resource: !Sub 'arn:aws:s3:::${Bucket}/logs/alb/*'
+            Condition:
+              StringEquals:
+                "s3:x-amz-acl": "bucket-owner-full-control"
           - Effect: Allow
+            Principal:
+              Service: elasticloadbalancing.amazonaws.com
             Action: s3:PutObject
-            Resource: !Sub 'arn:aws:s3:::${LogBucket}/logs/cloudfront/*'
+            Resource: !Sub 'arn:aws:s3:::${Bucket}/logs/cloudfront/*'
+            Condition:
+              StringEquals:
+                "s3:x-amz-acl": "bucket-owner-full-control"
 
 Outputs:
-  LogBucket:
-    Value: !Ref LogBucket
-  ALBLogPolicyArn:
-    Value: !Ref ALBLogPolicy
-  CloudFrontLogPolicyArn:
-    Value: !Ref CloudFrontLogPolicy
+  Bucket:
+    Value: !Ref Bucket

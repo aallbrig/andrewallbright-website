@@ -128,6 +128,8 @@ resource "aws_cloudformation_stack" "wordpress_loadbalancer" {
     SecurityGroupId: data.aws_security_group.web_tier_sg.id
     EC2InstanceId: data.aws_instance.wordpress_host.id
     SiteCertificateArn: aws_cloudformation_stack.wordpress_alb_certs.outputs.WordpressSiteCertificateArn
+    AccessLogsS3Bucket: aws_cloudformation_stack.wordpress_s3.outputs.Bucket
+    AccessLogsS3Prefix: "logs/alb"
   }
 }
 
