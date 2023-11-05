@@ -69,3 +69,7 @@ variable "wordpress_debug_logs_enabled" {
   type = bool
   default = false
 }
+variable "github_source_url" {
+  description = "(public) github repo with source code"
+  type = string
+}

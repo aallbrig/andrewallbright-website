@@ -178,3 +178,13 @@ resource "aws_cloudformation_stack" "wordpress_hostedzone" {
     ApexDNSHostedZoneId: data.aws_cloudfront_distribution.wordpress_cdn.hosted_zone_id
   }
 }
+
+resource "aws_cloudformation_stack" "acceptance_tests" {
+  name = format("%s-%s", var.project_namespace, "wordpress-acceptancetests")
+  capabilities = ["CAPABILITY_IAM"]
+  template_body = file("${path.module}/../cloudformation/website_tests.yaml")
+  parameters = {
+    GitHubSourceRepoURL: var.github_source_url
+    WebsiteURL: data.aws_ssm_parameter.wordpress_url_parameter.value
+  }
+}

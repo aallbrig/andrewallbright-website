@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFormation Template for Creating a CodeBuild Project to Run Tests'
+
+Parameters:
+  GitHubSourceRepoURL:
+    Type: String
+    Description: "The URL of the GitHub repository where the source code is located."
+  WebsiteURL:
+    Type: String
+    Description: "Website URL"
+
+Resources:
+  AcceptanceTestsBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: [codebuild.amazonaws.com]
+            Action: ['sts:AssumeRole']
+      Path: "/"
+      Policies:
+        - PolicyName: CodeBuildPermissions
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+
+  WebsiteAcceptanceTestsProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Sub "${AWS::StackName}-WebsiteAcceptanceTestsProject"
+      Description: "CodeBuild project to run automated acceptance tests for the website"
+      ServiceRole: !GetAtt AcceptanceTestsBuildRole.Arn
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Source:
+        Type: GITHUB
+        Location: !Ref GitHubSourceRepoURL
+        BuildSpec: 'src/website/tests/buildspec.yml'
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:7.0
+        EnvironmentVariables:
+          - Name: WEBSITE_URL
+            Value: !Ref WebsiteURL
+            Type: PLAINTEXT
+      TimeoutInMinutes: 5

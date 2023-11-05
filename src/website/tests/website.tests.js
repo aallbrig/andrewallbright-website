@@ -8,7 +8,8 @@ const contact_url = new URL('/contact/', website_url);
 
 const puppeteer_setting_headless = process.env.PUPPETEER_SETTING_HEADLESS !== 'false';
 const puppeteer_options = {
-    headless: puppeteer_setting_headless
+    headless: puppeteer_setting_headless,
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
 };
 
 describe('Personal Website Behavior', function() {

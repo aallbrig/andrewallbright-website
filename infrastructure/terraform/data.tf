@@ -44,3 +44,6 @@ data "aws_alb" "wordpress_alb" {
 data "aws_cloudfront_distribution" "wordpress_cdn" {
   id = aws_cloudformation_stack.wordpress_cdn.outputs.DistributionId
 }
+data "aws_ssm_parameter" "wordpress_url_parameter" {
+  name = aws_cloudformation_stack.wordpress_config.outputs.WordpressURLParameter
+}
