@@ -46,14 +46,22 @@ phases:
           lsb-release \
           wget \
           xdg-utils
-      - npm install --prefix src/website/tests
+      - npm ci --prefix src/website/tests
 
   build:
     commands:
       - echo "Running tests..."
-      - npm test --prefix src/website/tests
+      - npm test --prefix src/website/tests -- --reporter xunit --reporter-options output=report.xml
+
+artifacts:
+  files:
+    - report.xml
+  file-format: JUNITXML
+  base-directory: src/website/tests
 
 cache:
   paths:
+    - '~/.npm/**/*'
     - '/var/cache/apt/archives/**/*'
-    - 'src/website/tests/node_modules/**/*'
+    - '/var/lib/apt/lists/**/*'
+    - '/var/lib/dpkg/**/*'
