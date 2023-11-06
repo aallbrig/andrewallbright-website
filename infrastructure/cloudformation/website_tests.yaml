@@ -8,6 +8,13 @@ Parameters:
   WebsiteURL:
     Type: String
     Description: "Website URL"
+  ArtifactBucket:
+    Type: String
+    Description: The name of the S3 bucket where build artifacts will be stored.
+  ArtifactBucketKeyPrefix:
+    Type: String
+    Default: 'artifacts/acceptance_tests'
+    Description: The directory in the S3 bucket where build artifacts will be stored.
 
 Resources:
   AcceptanceTestsBuildRole:
@@ -32,6 +39,18 @@ Resources:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                 Resource: "*"
+              - Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                Resource:
+                  - !Sub 'arn:aws:s3:::${ArtifactBucket}/${ArtifactBucketKeyPrefix}/*'
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                Resource:
+                  - !Sub 'arn:aws:s3:::${ArtifactBucket}'
 
   WebsiteAcceptanceTestsProject:
     Type: AWS::CodeBuild::Project
@@ -40,7 +59,11 @@ Resources:
       Description: "CodeBuild project to run automated acceptance tests for the website"
       ServiceRole: !GetAtt AcceptanceTestsBuildRole.Arn
       Artifacts:
-        Type: NO_ARTIFACTS
+        Type: S3
+        Location: !Ref ArtifactBucket
+        Packaging: ZIP
+        Path: !Ref ArtifactBucketKeyPrefix
+        NamespaceType: BUILD_ID
       Source:
         Type: GITHUB
         Location: !Ref GitHubSourceRepoURL
@@ -54,3 +77,14 @@ Resources:
             Value: !Ref WebsiteURL
             Type: PLAINTEXT
       TimeoutInMinutes: 5
+
+  DailyBuildTrigger:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: Trigger for daily builds
+      ScheduleExpression: 'cron(0 12 * * ? *)'
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt WebsiteAcceptanceTestsProject.Arn
+          Id: "DailyBuildAcceptanceTests"
+          RoleArn: !GetAtt AcceptanceTestsBuildRole.Arn

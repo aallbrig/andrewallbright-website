@@ -186,5 +186,7 @@ resource "aws_cloudformation_stack" "acceptance_tests" {
   parameters = {
     GitHubSourceRepoURL: var.github_source_url
     WebsiteURL: data.aws_ssm_parameter.wordpress_url_parameter.value
+    ArtifactBucket: aws_cloudformation_stack.wordpress_s3.outputs.Bucket
+    ArtifactBucketKeyPrefix: "artifacts/acceptance_tests"
   }
 }

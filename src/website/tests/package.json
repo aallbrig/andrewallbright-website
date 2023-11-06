@@ -4,7 +4,7 @@
   "description": "Tests for my personal website",
   "main": "index.js",
   "scripts": {
-    "test": "mocha website.tests.js"
+    "test": "mocha --reporter mocha-multi-reporters website.tests.js"
   },
   "author": "Andrew Allbright",
   "license": "ISC",
@@ -12,5 +12,14 @@
     "chai": "^4.3.10",
     "mocha": "^10.2.0",
     "puppeteer": "^21.3.8"
+  },
+  "mocha": {
+    "reporterEnabled": "spec, xunit",
+    "xunitReporterOptions": {
+      "output": "website.tests.report.xml"
+    }
+  },
+  "devDependencies": {
+    "mocha-multi-reporters": "^1.5.1"
   }
 }

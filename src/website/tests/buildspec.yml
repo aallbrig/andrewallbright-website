@@ -51,11 +51,11 @@ phases:
   build:
     commands:
       - echo "Running tests..."
-      - npm test --prefix src/website/tests -- --reporter xunit --reporter-options output=report.xml
+      - npm test --prefix src/website/tests
 
 artifacts:
   files:
-    - report.xml
+    - website.tests.report.xml
   file-format: JUNITXML
   base-directory: src/website/tests
 
