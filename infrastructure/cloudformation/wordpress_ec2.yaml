@@ -64,21 +64,22 @@ Parameters:
       - false
 
 Resources:
-  WordPressEC2Instance:
-    Type: AWS::EC2::Instance
+  WordPressInstanceLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
     Properties:
-      ImageId: !Ref ImageId
-      InstanceType: !Ref InstanceType
-      IamInstanceProfile: !Ref WordpressInstanceProfile
-      SecurityGroupIds: !Ref SecurityGroupList
-      SubnetId: !Ref SubnetId
-      KeyName: !Ref KeyName
-      UserData:
-        Fn::Base64:
-          !Sub |
+      LaunchTemplateData:
+        ImageId: !Ref ImageId
+        InstanceType: !Ref InstanceType
+        IamInstanceProfile:
+          Name: !Ref WordpressInstanceProfile
+        SecurityGroupIds: !Ref SecurityGroupList
+        KeyName: !Ref KeyName
+        UserData:
+          Fn::Base64:
+            !Sub |
             #!/bin/bash -ex
             dnf update -y
-
+            
             # Install Apache, PHP, and additional necessary modules
             dnf install -y \
               wget \
@@ -91,12 +92,12 @@ Resources:
               php-json \
               mariadb105-server \
               amazon-cloudwatch-agent
-          
+            
             set +x
             # Get sensitive pw data from Secrets Manager
             DATABASE_PASSWORD=$(aws secretsmanager get-secret-value --secret-id ${DatabasePasswordSecretArn} --query SecretString --output text)
             WORDPRESS_ADMIN_PASSWORD=$(aws secretsmanager get-secret-value --secret-id ${WordpressAdminPasswordSecretArn} --query SecretString --output text)
-
+            
             # Get config data from parameter store
             DATABASE_HOST=$(aws ssm get-parameter --name ${DatabaseHostParameterName} --query Parameter.Value --output text)
             DATABASE_NAME=$(aws ssm get-parameter --name ${DatabaseNameParameterName} --query Parameter.Value --output text)
@@ -106,14 +107,14 @@ Resources:
             WORDPRESS_URL=$(aws ssm get-parameter --name ${WordpressURLParameterName} --query Parameter.Value --output text)
             WORDPRESS_TITLE=$(aws ssm get-parameter --name ${WordpressTitleParameterName} --query Parameter.Value --output text)
             set -x
-
+            
             # Download and install WP-CLI
             curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
             chmod +x wp-cli.phar
             sudo mv wp-cli.phar /usr/local/bin/wp
-
+            
             cd /var/www/html
-
+            
             # Configure WordPress
             wp core download --allow-root
             set +x
@@ -131,23 +132,23 @@ Resources:
               --admin_email="${!WORDPRESS_ADMIN_EMAIL}" \
               --allow-root
             set -x
-    
+            
             ## wp_config.php customizations
             # Enable SSL when being sent traffic from CDN and/or loadbalancer
             echo '' >> /var/www/html/wp-config.php
             echo 'if (isset($_SERVER["HTTP_X_FORWARDED_PROTO"]) && $_SERVER["HTTP_X_FORWARDED_PROTO"] == "https")' >> /var/www/html/wp-config.php
             echo '    $_SERVER["HTTPS"] = "on";' >> /var/www/html/wp-config.php
-          
+            
             # Enable debug and debug logging
-            # echo '' >> /var/www/html/wp-config.php
-            # echo 'define( "WP_DEBUG", ${WordpressDebug} );' >> /var/www/html/wp-config.php
+            echo '' >> /var/www/html/wp-config.php
+            sed -i "s/'WP_DEBUG', false/'WP_DEBUG', ${WordpressDebug}/g" /var/www/html/wp-config.php
             # echo 'define( "WP_DEBUG_LOG", ${WordpressDebugLogs} );' >> /var/www/html/wp-config.php
             
             # force ssl for admin pages
-            echo '' >> /var/www/html/wp-config.php
-            echo 'define("FORCE_SSL_ADMIN", true);' >> /var/www/html/wp-config.php
-            echo '' >> /var/www/html/wp-config.php
-          
+            # echo '' >> /var/www/html/wp-config.php
+            # echo 'define("FORCE_SSL_ADMIN", true);' >> /var/www/html/wp-config.php
+            # echo '' >> /var/www/html/wp-config.php
+            
             # Configure Apache for WordPress
             echo '<Directory "/var/www/html">' > /etc/httpd/conf.d/wordpress.conf
             echo '  Options Indexes FollowSymLinks' >> /etc/httpd/conf.d/wordpress.conf
@@ -185,12 +186,12 @@ Resources:
               flamingo \
               google-site-kit \
               options-for-twenty-twenty-one
-
+            
             # Enable auto updates (wordpress core, theme(s), plugins
             sudo -u apache wp config set WP_AUTO_UPDATE_CORE true --raw
             sudo -u apache wp theme auto-updates enable --all || true
             sudo -u apache wp plugin auto-updates enable --all || true
-
+            
             # Important logs from this ec2 instance I want to stream into cloudwatch
             cat > /tmp/cloudwatch_logs_config.json <<EOL
             {
@@ -254,12 +255,20 @@ Resources:
               }
             }
             EOL
-
+            
             amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/tmp/cloudwatch_logs_config.json -s
-
+            
             # Start Apache
             systemctl start httpd
             systemctl enable httpd
+
+  WordPressEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      LaunchTemplate:
+        LaunchTemplateId: !Ref WordPressInstanceLaunchTemplate
+        Version: !GetAtt WordPressInstanceLaunchTemplate.LatestVersionNumber
+      SubnetId: !Ref SubnetId
 
 Outputs:
   WordPressInstanceId:
