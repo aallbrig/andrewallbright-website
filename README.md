@@ -6,7 +6,10 @@ Switch website from Wordpress HA on AWS to just being a hugo website hosted on G
 
 ## Development
 ```bash
+# develop
 hugo server
+# build assets
+HUGO_ENV="production" hugo -t github-style
 ```
 
 ### Tech Stack
