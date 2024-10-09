@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Software Engineering on Andrew Allbright</title>
+    <link>https://andrewallbright.com/categories/software-engineering/</link>
+    <description>Recent content in Software Engineering on Andrew Allbright</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 14 Mar 2022 03:22:14 +0000</lastBuildDate>
+    <atom:link href="https://andrewallbright.com/categories/software-engineering/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Defining Video Game Interfaces (VGIs)</title>
+      <link>https://andrewallbright.com/defining-video-game-interfaces-vgis/</link>
+      <pubDate>Mon, 14 Mar 2022 03:22:14 +0000</pubDate>
+      <guid>https://andrewallbright.com/defining-video-game-interfaces-vgis/</guid>
+      <description>&lt;!-- raw HTML omitted --&gt;&#xA;&lt;!-- raw HTML omitted --&gt;&#xA;&lt;p&gt;Most everyone today interact with &lt;em&gt;&lt;!-- raw HTML omitted --&gt;graphical user interfaces&lt;!-- raw HTML omitted --&gt;&lt;/em&gt; (a.k.a GUIs) when using a computer (phone or otherwise). This makes sense as people are visual creatures and it helps them use computers effectively.&lt;/p&gt;&#xA;&lt;p&gt;Technical people like programmers or computer power users may choose to use &lt;em&gt;&lt;!-- raw HTML omitted --&gt;command line interfac&lt;!-- raw HTML omitted --&gt;&lt;/em&gt; (CLIs). You can accomplish so much when you get used to using CLIs.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Printable Project Notes Technique</title>
+      <link>https://andrewallbright.com/printable-project-notes-technique/</link>
+      <pubDate>Thu, 09 Sep 2021 03:08:57 +0000</pubDate>
+      <guid>https://andrewallbright.com/printable-project-notes-technique/</guid>
+      <description>&lt;!-- raw HTML omitted --&gt;&#xA;&lt;p&gt;I have discovered a technique that seems to help with project work. It is a combination of digital and physical. I call the technique the “Printable Project Notes technique.” Let me tell you how it works.&lt;/p&gt;&#xA;&lt;p&gt;The generic objective is to use your printer to create something that can help direct your project. The idea is that your screen real estate while doing project work is extremely valuable; wouldn’t it be nice to have something physical to reference?&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>First Impressions: AWS CloudShell</title>
+      <link>https://andrewallbright.com/first-impressions-aws-cloudshell/</link>
+      <pubDate>Tue, 03 Aug 2021 17:56:32 +0000</pubDate>
+      <guid>https://andrewallbright.com/first-impressions-aws-cloudshell/</guid>
+      <description>&lt;p&gt;I remember seeing an announcement about &lt;a href=&#34;https://aws.amazon.com/cloudshell/&#34;&gt;AWS Cloud Shell&lt;/a&gt; December of 2020 but I did not explore it then. Instead I was focusing on my Unity learning path. Recently, I decided to use it when I had to fix the state of my AWS resources. This blog is meant to capture some of my thoughts and excitement.&lt;/p&gt;&#xA;&lt;p&gt;I use Electronic Freedom Foundation (EFF)’s &lt;a href=&#34;https://certbot.eff.org/&#34;&gt;Certbot&lt;/a&gt; tool to handle SSL certification rotation (&lt;a href=&#34;https://www.cloudflare.com/learning/ssl/how-does-ssl-work/&#34;&gt;How does SSL work? by CloudFlare&lt;/a&gt;, for the curious) directly on my AWS &lt;a href=&#34;https://aws.amazon.com/ec2&#34;&gt;EC2 instances&lt;/a&gt;. With my current setup, I need to intervene every so often (not great but good enough). This was what provided me the opportunity to explore AWS CloudShell months after its release.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Trade-offs During Project Execution</title>
+      <link>https://andrewallbright.com/hypocrisy-as-a-pragmatic-development-tool/</link>
+      <pubDate>Sat, 01 Aug 2020 22:21:49 +0000</pubDate>
+      <guid>https://andrewallbright.com/hypocrisy-as-a-pragmatic-development-tool/</guid>
+      <description>&lt;!-- raw HTML omitted --&gt;&#xA;&lt;p&gt;&lt;!-- raw HTML omitted --&gt;Voltaire&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;&#xA;&lt;!-- raw HTML omitted --&gt;&#xA;&lt;p&gt;Programmers come up with rules constantly in an effort to make our products more resilient, the code easier to work with, or even to release. Sometimes these rules play well with each other but sometime these rules contradict. This creates a problem for the programmer — given a set of rules contradict each other, which one should the programmer follow?&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

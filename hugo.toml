@@ -1,0 +1,10 @@
+baseURL = 'https://andrewallbright.com/'
+languageCode = 'en-us'
+title = 'Andrew Allbright'
+theme = 'github-style'
+
+[params]
+  author = "Andrew Allbright"
+  description = "Personal Website"
+  github = "aallbrig"
+  url = "https://andrewallbright.com"

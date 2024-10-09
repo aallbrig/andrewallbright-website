@@ -1,23 +1,15 @@
 # Andrew Allbright website
 
-This source code is how I develop and operate my personal website.
+Switch website from Wordpress HA on AWS to just being a hugo website hosted on GitHub pages.
 
 ### [AndrewAllbright.com](https://andrewallbright.com)
 
 ## Development
 ```bash
-# run all test scripts (see relevant scripts/tests/*.sh files)
-./scripts/all-build.sh
-./scripts/start-local-environment.sh
-./scripts/all-tests.sh
+hugo server
 ```
 
 ### Tech Stack
-1. [ ] Terraform
-1. [x] Bash Scripting
-1. [x] AWS
-1. [x] ~~NGINX~~ Apache
-1. [x] PHP
-    1. [x] Wordpress
-1. [x] ~~MySQL~~ MariaDB
-1. [x] Docker & Docker Compose (local sim)
+1. [x] Hugo
+1. [x] GitHub Pages
+1. [x] AWS Route53

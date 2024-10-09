@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Game.ci on Andrew Allbright</title>
+    <link>https://andrewallbright.com/tags/game.ci/</link>
+    <description>Recent content in Game.ci on Andrew Allbright</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 20 Feb 2022 14:00:00 +0000</lastBuildDate>
+    <atom:link href="https://andrewallbright.com/tags/game.ci/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Brand New Unity Project: My Starter Kit</title>
+      <link>https://andrewallbright.com/brand-new-unity-project-my-starter-kit/</link>
+      <pubDate>Sun, 20 Feb 2022 14:00:00 +0000</pubDate>
+      <guid>https://andrewallbright.com/brand-new-unity-project-my-starter-kit/</guid>
+      <description>&lt;p&gt;Testing is a core tenant I believe helps me produce high quality software. In order to have faith in a test suite that is assembled is to constantly verify every code change that is introduced to the system.&lt;/p&gt;&#xA;&lt;p&gt;Github Actions (&lt;!-- raw HTML omitted --&gt;docs&lt;!-- raw HTML omitted --&gt;) is a wonderful workflow based system that can easily integrate with a Github project. Since Github is my version control repository of choice, it is natural for me to adopt it.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
