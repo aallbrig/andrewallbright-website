@@ -2,7 +2,7 @@
 
 Switch website from Wordpress HA on AWS to just being a hugo website hosted on GitHub pages.
 
-### [AndrewAllbright.com](https://andrewallbright.com)
+### [https://andrewallbright.com](https://andrewallbright.com)
 
 ## Development
 ```bash
