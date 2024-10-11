@@ -8,3 +8,4 @@ theme = 'github-style'
   description = "Personal Website"
   github = "aallbrig"
   url = "https://andrewallbright.com"
+  headerIcon = "/images/aa-header-icon.png"
