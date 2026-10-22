@@ -14,6 +14,7 @@ For each project:
    language bytes (`gh api repos/aallbrig/<repo>/languages`), dependencies (`gh api repos/aallbrig/<repo>/contents/<manifest>`
    for `go.mod`, `package.json`, `requirements.txt`, `pyproject.toml`), and the README. Never invent features.
 2. **Screenshot.** `scripts/screenshot.sh <url> portfolio/images/<slug>.png` (headless Chrome, 1280x800).
+   For Unity/WebGL games headless Chrome renders a blank page, so use `scripts/screenshot_webgl.sh <url> <out.png>` instead (headed Chrome on Xvfb).
    Look at the image; retake it if it shows a cookie banner, an error, or a blank page.
 3. **Write** `portfolio/<slug>.md`: what it is, why it exists, how it works, a **Tech stack** list (language breakdown, key libraries, hosting),
    and links. Audience: engineers interested in his work. Concrete details beat adjectives. Follow the style guide in `docs/`.
