@@ -7,6 +7,8 @@ url: https://stockmarketwords.com
 repo: aallbrig/stock-market-words
 image: images/stock-market-words.png
 ---
+
+Live site: [stockmarketwords.com](https://stockmarketwords.com)
 Stock Market Words started from a whimsical question: what if the words in a dictionary were stock tickers?
 Paste a news article, earnings transcript or Reddit post and it scans for valid ticker symbols, then scores each across six investment-strategy lenses.
 The ticker extraction runs entirely in your browser. The site also publishes articles and tracks more than 3,000 tickers daily.

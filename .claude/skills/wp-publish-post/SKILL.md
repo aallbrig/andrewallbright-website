@@ -10,8 +10,10 @@ Input: a path in `posts/drafts/`. Ask which file if it is unclear.
 1. **Validate.** `python3 scripts/wp_post.py check <file>` prints the block HTML or an error. Then
    `pre-commit run markdownlint-cli2 --files <file>`. Fix problems with the user; do not silently rewrite their prose.
 2. **Confirm approval.** The user must have said the draft is approved in this conversation. If not, stop and ask.
-3. **Images.** For each local image in the post, upload with `scripts/wp.sh --confirm media import <path> --porcelain`
-   (path must be reachable from the server; copy it with the user's approval first), then replace the markdown path with the returned URL.
+3. **Images.** For each local image in the post, run
+   `scripts/wp_media.sh <path> --title="..." --alt="..."` (streams the file to the server, imports it, cleans up) and note the
+   attachment ID it prints. Get its URL with `scripts/wp.sh post get <ID> --field=guid`, and replace the markdown path with that URL.
+   Local paths that are not replaced make the post fail review; use `--strip-local-images` only when the image is a featured image.
 4. **Dry run.** `python3 scripts/wp_post.py publish <file> --dry-run`. Show the command to the user.
 5. **Create or update the draft.** `python3 scripts/wp_post.py publish <file>`. This is a `draft` unless `wp_post_id` exists, in which case it updates that post.
    Record the printed post ID as `wp_post_id:` in the frontmatter.

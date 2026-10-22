@@ -30,6 +30,7 @@ REQUIRED = ("title", "slug", "excerpt")
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 FRONTMATTER_RE = re.compile(r"\A---\n(.*?)\n---\n(.*)\Z", re.S)
 VOID = {"br", "hr", "img"}
+LOCAL_IMAGE_RE = re.compile(r"^!\[[^\]]*\]\((?!https?://)[^)]*\)\n?", re.M)
 
 
 class PostError(ValueError):
@@ -149,7 +150,7 @@ def to_blocks(body: str) -> str:
     return "\n\n".join(out)
 
 
-def build_commands(post: Post, status: str, category_ids: list[int]) -> list[str]:
+def build_commands(post: Post, status: str | None, category_ids: list[int]) -> list[str]:
     """Return the argv for wp.sh as a shell-quoted string; content goes on stdin."""
     post_id = post.meta.get("wp_post_id")
     verb = ["post", "update", str(post_id)] if post_id else ["post", "create", "-", "--porcelain"]
@@ -161,8 +162,10 @@ def build_commands(post: Post, status: str, category_ids: list[int]) -> list[str
         f"--post_title={post.meta['title']}",
         f"--post_name={post.meta['slug']}",
         f"--post_excerpt={post.meta['excerpt']}",
-        f"--post_status={status}",
     ]
+    # An update keeps the post's current status unless one is requested; a new post defaults to draft.
+    if status or not post_id:
+        args.append(f"--post_status={status or 'draft'}")
     if category_ids:
         args.append("--post_category=" + ",".join(str(i) for i in category_ids))
     if post.tags:
@@ -189,16 +192,22 @@ def resolve_categories(names: list[str]) -> list[int]:
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
-    sub.add_parser("check").add_argument("file", type=Path)
+    chk = sub.add_parser("check")
+    chk.add_argument("file", type=Path)
+    chk.add_argument("--strip-local-images", action="store_true", help="drop images that are not http(s) URLs")
     pub = sub.add_parser("publish")
     pub.add_argument("file", type=Path)
     pub.add_argument("--dry-run", action="store_true")
-    pub.add_argument("--status", choices=["draft", "publish"], default="draft")
+    pub.add_argument("--strip-local-images", action="store_true", help="drop images that are not http(s) URLs")
+    pub.add_argument("--status", choices=["draft", "publish"], default=None)
     args = ap.parse_args(argv)
 
     try:
         post = parse(args.file.read_text(encoding="utf-8"))
-        html = to_blocks(post.body)
+        body = post.body
+        if args.strip_local_images:
+            body = LOCAL_IMAGE_RE.sub("", body)
+        html = to_blocks(body)
         if args.cmd == "check":
             print(html)
             return 0

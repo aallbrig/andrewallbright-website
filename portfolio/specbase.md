@@ -7,6 +7,8 @@ url: https://specbase.net
 repo: aallbrig/specbase
 image: images/specbase.png
 ---
+
+Live site: [specbase.net](https://specbase.net)
 Specbase answers one question for people and AI agents alike: *what specification documents should exist for this kind of project?*
 Pick a project type (video game, CLI tool, web app, IoT, ML/AI and more) plus features such as multiplayer or payments.
 Specbase composes the matching document set from a knowledge base of 200+ spec documents, then emits a checklist, a system-prompt snippet and starter Markdown stubs.

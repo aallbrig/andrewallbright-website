@@ -7,6 +7,8 @@ url: https://aallbrig.github.io/treemand
 repo: aallbrig/treemand
 image: images/treemand.png
 ---
+
+Live site: [aallbrig.github.io/treemand](https://aallbrig.github.io/treemand)
 Most of us explore an unfamiliar CLI by running `--help` again and again, one subcommand at a time.
 Treemand does that crawl for you. It introspects a tool's help output, builds the whole command hierarchy and prints it as a tree, or as JSON or YAML for scripting.
 In interactive mode (`-i`) a keyboard-driven terminal UI lets you browse commands, pick flags, fill positional arguments, and copy or run the assembled command.

@@ -7,6 +7,8 @@ url: https://anthemworld.net
 repo: aallbrig/anthemworld
 image: images/anthem-world.png
 ---
+
+Live site: [anthemworld.net](https://anthemworld.net)
 Anthem World lets you click a country on a map and hear its national anthem, see who composed it, when it was adopted and what it means.
 A sortable, searchable table answers questions like which country has the youngest anthem. In Anthem Battle, visitors hear two anthems and vote; votes feed an ELO rating, the same method used for chess, to build a community leaderboard. Votes count for more the longer you listen.
 

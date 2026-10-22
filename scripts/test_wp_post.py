@@ -77,3 +77,16 @@ def test_update_command_when_id_present() -> None:
 def test_parse_reports_bad_yaml() -> None:
     with pytest.raises(wp_post.PostError, match="valid YAML"):
         wp_post.parse("---\ntitle: Routine Mark: track\nslug: x\nexcerpt: e\n---\nbody")
+
+
+def test_update_does_not_change_status_by_default() -> None:
+    post = wp_post.parse(GOOD.replace("slug: hello-world", "slug: hello-world\nwp_post_id: 42"))
+    (cmd,) = wp_post.build_commands(post, None, [])
+    assert "--post_status" not in cmd
+    (cmd,) = wp_post.build_commands(post, "publish", [])
+    assert "--post_status=publish" in cmd
+
+
+def test_create_defaults_to_draft() -> None:
+    (cmd,) = wp_post.build_commands(wp_post.parse(GOOD), None, [])
+    assert "--post_status=draft" in cmd

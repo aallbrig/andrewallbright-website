@@ -17,8 +17,9 @@ For each project:
    Look at the image; retake it if it shows a cookie banner, an error, or a blank page.
 3. **Write** `portfolio/<slug>.md`: what it is, why it exists, how it works, a **Tech stack** list (language breakdown, key libraries, hosting),
    and links. Audience: engineers interested in his work. Concrete details beat adjectives. Follow the style guide in `docs/`.
-4. **Approval.** Show the user the text and screenshots. Do not touch the live site before they approve.
-5. **Apply.** Upload the image with `scripts/wp.sh --confirm media import` (after copying it to the server with approval),
-   set it as the featured image (`post meta update <ID> _thumbnail_id <attachment>`), and update content with
-   `post update <ID> -` from stdin using `python3 scripts/wp_post.py check portfolio/<slug>.md`.
+4. **Approval.** Show the user the text and screenshots. Do not touch the live site before they approve, unless they already asked for the update outright.
+5. **Apply.** Back up the current post (`scripts/wp.sh post get <ID> --format=json`). Upload the screenshot as the featured image:
+   `scripts/wp_media.sh portfolio/images/<slug>.png --post_id=<ID> --featured_image --title=... --alt=...`.
+   Update the content: `python3 scripts/wp_post.py publish portfolio/<slug>.md --strip-local-images`
+   (an update keeps the post's current status). The portfolio markdown carries `wp_post_id`, `url` and `repo` in its frontmatter.
 6. Verify the public page with `curl` and re-screenshot `https://andrewallbright.com/portfolio/`.

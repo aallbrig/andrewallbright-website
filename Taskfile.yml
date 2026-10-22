@@ -38,9 +38,27 @@ tasks:
       - task: build
 
   dev:
-    desc: Start or attach to the tmuxinator session
+    desc: Start the tmuxinator session, or attach if it is already running
     cmds:
-      - echo "dev session is added in a later step"
+      - tmux has-session -t andrewallbright-website 2>/dev/null && tmux attach -t andrewallbright-website || tmuxinator start andrewallbright-website
+
+  dev:attach:
+    desc: Attach to the running session without restarting it
+    cmds:
+      - tmux attach -t andrewallbright-website
+
+  dev:recycle:
+    desc: Kill the session and start a fresh one (run from outside tmux)
+    cmds:
+      - tmux kill-session -t andrewallbright-website 2>/dev/null || true
+      - tmuxinator start andrewallbright-website
+
+  wp:status:
+    desc: Read-only health check of the live site (core version, plugins, theme)
+    cmds:
+      - scripts/wp.sh core version
+      - scripts/wp.sh plugin list --fields=name,status,version
+      - scripts/wp.sh theme list --fields=name,status,version
 
   pr:merge:
     desc: Wait for CI on PR N, then merge (task pr:merge -- N)

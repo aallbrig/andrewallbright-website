@@ -7,6 +7,8 @@ url: https://routinemark.com
 repo: aallbrig/routine-mark
 image: images/routine-mark.png
 ---
+
+Live site: [routinemark.com](https://routinemark.com)
 Routine Mark answers "did you do the thing today?" with one large button.
 Create a calendar for each habit, such as the gym, a weekly class or a home-cooked meal, and watch the green dots build up. There is no account and no backend: it works offline after the first load and keeps your data in the browser. It also ships with a user manual.
 

@@ -7,6 +7,8 @@ url: https://aallbrig.github.io/covid-school-bingo/
 repo: aallbrig/covid-school-bingo
 image: images/covid-school-bingo-card-generator.png
 ---
+
+Live site: [aallbrig.github.io/covid-school-bingo](https://aallbrig.github.io/covid-school-bingo/)
 Going back to school during the 2020 COVID wave was not going to be fun, so this page tries to make it fun.
 It generates a 5x5 BINGO board of situations teachers and staff were likely to see, with a free center square, ready to print and mark off.
 It was a weekend project from August 2020.
