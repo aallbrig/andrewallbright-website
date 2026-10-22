@@ -32,7 +32,7 @@ Posts are created as WordPress drafts first, and going live is a separate, expli
 ## Setup
 
 ```bash
-task setup                 # installs the pre-commit hooks
+task setup                 # installs Python test dependencies and the pre-commit hooks
 cp .env.example .env       # then fill in WP_SSH_HOST and WP_PATH
 ```
 

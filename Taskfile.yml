@@ -7,6 +7,7 @@ tasks:
   setup:
     desc: One-time install of tooling deps and git hooks
     cmds:
+      - python3 -m pip install -r requirements-dev.txt
       - pre-commit install --install-hooks
 
   lint:
