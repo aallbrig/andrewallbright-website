@@ -31,6 +31,7 @@ It also holds the future home of custom themes and plugins in `wp-content/`.
 - Write a post: use the `blog-author` agent, review the draft in `posts/drafts/`, then run the `wp-publish-post` skill.
 - Portfolio, home page and tags: use the `portfolio-update` skill, `pages/README.md` and `docs/*_tag_audit.md`.
 - Quality gates: `task lint`, `task test`, `task ci`. Commit only when they pass.
+- After pushing to `main`, run `gh run list --limit 1` until the CI run shows `success`. Local green does not prove CI green.
 
 ## Server facts (verified 2026-10-22)
 
