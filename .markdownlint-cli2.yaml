@@ -4,6 +4,8 @@ config:
   default: true
   MD013: false
   MD040: true
+  # Titles live in frontmatter, and agent/skill prompt files start with frontmatter only.
+  MD041: false
   MD033:
     allowed_elements: [br, img, figure, figcaption]
 globs:

@@ -25,6 +25,13 @@ repos:
     hooks:
       - id: shellcheck
 
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.8.4
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
   - repo: local
     hooks:
       - id: forbid-sensitive-files
@@ -33,3 +40,9 @@ repos:
         language: fail
         files: '(^|/)(\.env(\..*)?|wp-config\.php|id_(rsa|ed25519)[^/]*|[^/]+\.(sql|sql\.gz|pem|key))$'
         exclude: '(^|/)\.env\.example$'
+      - id: pytest
+        name: pytest
+        entry: python3 -m pytest -q
+        language: system
+        pass_filenames: false
+        files: '^(scripts/.*\.py|Taskfile\.yml|README\.md|CLAUDE\.md|\.github/.*)$'

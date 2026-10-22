@@ -23,7 +23,7 @@ tasks:
   test:
     desc: All tests
     cmds:
-      - echo "no tests yet"
+      - python3 -m pytest -q
 
   build:
     desc: Build artifacts (nothing to build yet; kept for the standard interface)
