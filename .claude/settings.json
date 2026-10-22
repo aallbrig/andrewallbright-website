@@ -6,6 +6,7 @@
       "Bash(scripts/wp.sh post list*)",
       "Bash(scripts/wp.sh post get*)",
       "Bash(scripts/wp.sh post meta get*)",
+      "Bash(scripts/wp.sh post term list*)",
       "Bash(scripts/wp.sh term list*)",
       "Bash(scripts/wp.sh post-type list*)",
       "Bash(scripts/wp.sh core version*)",

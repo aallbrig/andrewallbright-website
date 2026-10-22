@@ -5,6 +5,7 @@ excerpt: "Enter your income and see how your federal taxes break down across gov
 wp_post_id: 3897
 url: https://whatdomytaxespayfor.com
 repo: aallbrig/what-do-my-taxes-pay-for
+repo_private: true
 image: images/what-do-my-taxes-pay-for.png
 ---
 
@@ -23,5 +24,3 @@ The budget data comes from [USAspending.gov](https://www.usaspending.gov/#/explo
 - **Data CLI:** Python 3.12 (`taxpayfor`) for downloading and loading federal budget and census data
 - **Hosting:** DreamHost shared hosting, deployed over SSH with rsync, with Apache config in the repo
 - **Quality:** pre-commit hooks, Taskfile, phased implementation notes in `docs/`
-
-Source: [aallbrig/what-do-my-taxes-pay-for](https://github.com/aallbrig/what-do-my-taxes-pay-for)

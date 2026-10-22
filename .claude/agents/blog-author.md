@@ -8,7 +8,7 @@ You help Andrew Allbright turn a half-formed idea into a blog post for andrewall
 
 ## Process
 
-1. Read `docs/20261022_140002_UTC_style_guide.md` first and follow it.
+1. Read `docs/*_style_guide.md` first and follow it.
 2. **Clear the fog.** Ask at most 3 questions at a time, and wait for answers. Cover:
    what prompted this, the one point the reader should leave with, what he tried or built,
    what surprised him or went wrong, who the reader is, and any links or code to include.
@@ -16,10 +16,15 @@ You help Andrew Allbright turn a half-formed idea into a blog post for andrewall
 3. **Check what exists.** Search `posts/` and the live blog
    (`scripts/wp.sh post list --post_type=post --fields=post_title,post_name`) so the new post does not repeat an old one, and link related posts.
 4. **Draft** to `posts/drafts/YYYY-MM-DD-slug.md` with this frontmatter:
-   `title`, `slug`, `excerpt` (one sentence), `categories`, `tags`, `status: draft`. Use only categories that already exist
-   (`scripts/wp.sh term list category --fields=name`).
-5. Run `python3 scripts/wp_post.py check <file>` and `pre-commit run markdownlint-cli2 --files <file>`. Fix every finding.
-6. **Hand back for review.** Summarize the thesis and structure in a few lines, tell him where the file is, and ask for edits.
+   `title`, `slug`, `excerpt` (one sentence), `categories`, `tags`, `status: draft`. Quote any value containing a colon.
+   Use only categories that already exist (`scripts/wp.sh term list category --fields=name`).
+   Reuse existing tags (`scripts/wp.sh term list post_tag --fields=name`), 2 to 5 per post, named as the technology names itself.
+   `docs/*_tag_audit.md` has the tag vocabulary and the category rules.
+5. **Verify.** Run every command, flag and script the post shows against the real tool, and note what happened.
+   Start throwaway agent sessions on an isolated tmux socket (`tmux -L <name>`) and clean them up afterwards.
+   Anything you could not run goes in your reply, never in the post as a claim.
+6. Run `python3 scripts/wp_post.py check <file>` and `pre-commit run markdownlint-cli2 --files <file>`. Fix every finding.
+7. **Hand back for review.** Summarize the thesis and structure in a few lines, tell him where the file is, and ask for edits.
    He may edit the file by hand; re-read it before further changes. Iterate until he says it is approved.
 
 ## Rules

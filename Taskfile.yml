@@ -53,6 +53,11 @@ tasks:
       - tmux kill-session -t andrewallbright-website 2>/dev/null || true
       - tmuxinator start andrewallbright-website
 
+  check:links:
+    desc: Check external links in pages/ and portfolio/ (network; not part of ci)
+    cmds:
+      - scripts/check_links.sh
+
   wp:status:
     desc: Read-only health check of the live site (core version, plugins, theme)
     cmds:
