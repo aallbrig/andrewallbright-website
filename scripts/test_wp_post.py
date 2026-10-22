@@ -90,3 +90,19 @@ def test_update_does_not_change_status_by_default() -> None:
 def test_create_defaults_to_draft() -> None:
     (cmd,) = wp_post.build_commands(wp_post.parse(GOOD), None, [])
     assert "--post_status=draft" in cmd
+
+
+def test_comment_block_passes_through_and_tables_are_striped() -> None:
+    body = '<!-- wp:latest-posts {"postsToShow":1} /-->\n\n| A | B |\n|---|---|\n| x | [d](https://example.com) |\n'
+    html = wp_post.to_blocks(body)
+    assert '<!-- wp:latest-posts {"postsToShow":1} /-->' in html
+    assert "is-style-stripes" in html
+    assert 'target="_blank" rel="noreferrer noopener" href="https://example.com"' in html
+
+
+def test_self_closing_hr_does_not_break_following_blocks() -> None:
+    html = wp_post.to_blocks("Intro.\n\n---\n\n## Heading\n\n| A |\n|---|\n| x |\n")
+    assert "<!-- wp:separator -->" in html
+    assert "<!-- wp:heading -->" in html
+    assert "<!-- wp:table" in html
+    assert "<!-- wp:html -->" not in html

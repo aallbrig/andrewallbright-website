@@ -15,6 +15,8 @@ Nothing sensitive lives here.
 | Style guide | `docs/*_style_guide.md` | The author's voice, so drafts sound like the blog |
 | Guarded wp-cli wrapper | `scripts/wp.sh` | The only way the agent reaches the server |
 | Markdown to WordPress | `scripts/wp_post.py` | Validates frontmatter and emits Gutenberg block markup |
+| Page sources | `pages/` | The home page (technologies grouped by area, each linked to its docs) as editable markdown |
+| Taxonomy audit | `docs/*_tag_audit.md` | Category and tag review of every post, with proposed changes |
 | Custom themes/plugins | `wp-content/` | Empty for now; `wp-content/TODO.md` lists the setup to do first |
 
 ## Workflow
