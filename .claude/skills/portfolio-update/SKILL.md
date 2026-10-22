@@ -10,7 +10,8 @@ Portfolio items are the `portfolio` post type (Visual Portfolio plugin). List th
 
 For each project:
 
-1. **Facts.** Find the repo (`gh repo view aallbrig/<repo> --json description,homepageUrl,createdAt,pushedAt,languages`),
+1. **Facts.** First check visibility: `gh repo view aallbrig/<repo> --json visibility`. For a PRIVATE repo, set `repo_private: true` in the frontmatter, never link it, and use only what the project's public site shows; ask before using README details.
+   Then Find the repo (`gh repo view aallbrig/<repo> --json description,homepageUrl,createdAt,pushedAt,languages`),
    language bytes (`gh api repos/aallbrig/<repo>/languages`), dependencies (`gh api repos/aallbrig/<repo>/contents/<manifest>`
    for `go.mod`, `package.json`, `requirements.txt`, `pyproject.toml`), and the README. Never invent features.
 2. **Screenshot.** `scripts/screenshot.sh <url> portfolio/images/<slug>.png` (headless Chrome, 1280x800).

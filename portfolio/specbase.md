@@ -5,6 +5,7 @@ excerpt: "The spec oracle for AI agents and developers: a CLI, web runner and MC
 wp_post_id: 4098
 url: https://specbase.net
 repo: aallbrig/specbase
+repo_private: true
 image: images/specbase.png
 ---
 
@@ -26,5 +27,3 @@ It is agent-native. The same data is served by a single-binary CLI, a browser ru
 - **Distribution:** GoReleaser binaries, Homebrew tap, Scoop, `go install`, Docker image
 - **Tooling:** Taskfile and Makefile, Python helper scripts, infra-as-code in `infra/`, and CLAUDE.md/AGENTS.md for agent-driven development
 - **License:** Apache-2.0 code, CC-BY-4.0 knowledge base
-
-Source: [aallbrig/specbase](https://github.com/aallbrig/specbase)
