@@ -19,6 +19,7 @@ It also holds the future home of custom themes and plugins in `wp-content/`.
 |------|---------|
 | `posts/drafts/`, `posts/published/` | Markdown posts (the editable intermediate artifact) |
 | `portfolio/` | Portfolio project write-ups and screenshots |
+| `pages/` | WordPress pages kept as markdown (home page with the technologies tables); apply with `scripts/wp_post.py publish` |
 | `docs/` | Style guide (`docs/20261022_140002_UTC_style_guide.md`) |
 | `scripts/wp.sh`, `scripts/wp_post.py` | Guarded wp-cli wrapper; markdown to WordPress converter |
 | `wp-content/themes`, `wp-content/plugins` | Custom theme/plugin code (empty; see `wp-content/TODO.md`) |

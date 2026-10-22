@@ -30,6 +30,7 @@ REQUIRED = ("title", "slug", "excerpt")
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 FRONTMATTER_RE = re.compile(r"\A---\n(.*?)\n---\n(.*)\Z", re.S)
 VOID = {"br", "hr", "img"}
+EXTERNAL_LINK_RE = re.compile(r'<a href="(https?://[^"]+)"')
 LOCAL_IMAGE_RE = re.compile(r"^!\[[^\]]*\]\((?!https?://)[^)]*\)\n?", re.M)
 
 
@@ -98,6 +99,12 @@ class _TopLevel(HTMLParser):
             return
         self._depth += 1
 
+    def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        """`<hr />`: a void element opens and closes in one event, so do not count a close."""
+        self.handle_starttag(tag, attrs)
+        if tag not in VOID:
+            self.handle_endtag(tag)
+
     def handle_endtag(self, tag: str) -> None:
         self._buf.append(f"</{tag}>")
         self._depth -= 1
@@ -106,6 +113,13 @@ class _TopLevel(HTMLParser):
 
     def handle_data(self, data: str) -> None:
         self._emit(data)
+
+    def handle_comment(self, data: str) -> None:
+        """A top-level HTML comment passes through untouched, e.g. a dynamic `wp:latest-posts` block."""
+        if self._depth == 0:
+            self.blocks.append(("comment", f"<!--{data}-->"))
+        else:
+            self._buf.append(f"<!--{data}-->")
 
     def handle_entityref(self, name: str) -> None:
         self._emit(f"&{name};")
@@ -143,8 +157,14 @@ def to_blocks(body: str) -> str:
             out.append(f"<!-- wp:quote -->\n{raw}\n<!-- /wp:quote -->")
         elif tag == "hr":
             out.append('<!-- wp:separator -->\n<hr class="wp-block-separator"/>\n<!-- /wp:separator -->')
+        elif tag == "comment":
+            out.append(raw)
         elif tag == "table":
-            out.append(f'<!-- wp:table -->\n<figure class="wp-block-table">{raw}</figure>\n<!-- /wp:table -->')
+            raw = EXTERNAL_LINK_RE.sub(r'<a target="_blank" rel="noreferrer noopener" href="\1"', raw)
+            out.append(
+                '<!-- wp:table {"className":"is-style-stripes"} -->\n'
+                f'<figure class="wp-block-table is-style-stripes">{raw}</figure>\n<!-- /wp:table -->'
+            )
         else:
             out.append(f"<!-- wp:html -->\n{raw}\n<!-- /wp:html -->")
     return "\n\n".join(out)
