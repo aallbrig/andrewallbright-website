@@ -15,31 +15,34 @@ So I put one agent on each machine whose only purpose is to start the others. I 
 
 ### The pattern
 
-For every host I want to control, I run one launcher. It is a small, low powered agent (Claude Haiku is plenty) started in remote control mode and named after the host. On my phone, a launcher named for each host (`launcher-laptop`, say) sits in the session list next to my other sessions.
+For every host I want to control, I run one launcher: a small agent on Claude Haiku, started in remote control mode and named after the host. It sits in the session list on my phone next to everything else. Haiku is plenty because the work is a lookup and one command.
 
-The work is a lookup and one command, so I don't pay for a big model. Here is the whole flow:
+From the phone it goes like this:
 
 1. I message the launcher: "start an agent on aallbrig/specbase".
 2. The launcher runs one script.
 3. The script clones the repo with the GitHub CLI if it isn't on the host yet.
 4. The script starts a new Claude Code session at the base of that repo, also in remote control mode.
-5. The new session shows up in my session list. I open it and start steering.
+5. The new session appears in my list. I open it and start steering.
 
-The launcher starts like this:
+The launcher starts like this, from its own empty directory:
 
 ```bash
 claude --remote-control "launcher-$(hostname)" \
   --model haiku \
   --restricted \
   --tools Bash \
-  --allowedTools "Bash($HOME/.local/bin/spawn-agent *)" \
+  --strict-mcp-config \
+  --allowedTools "Bash(spawn-agent *)" \
   --permission-mode dontAsk \
-  --append-system-prompt "Your only job is to run spawn-agent owner/repo. Refuse everything else."
+  --append-system-prompt "Your only job is to start agents. Run exactly one command, spawn-agent owner/repo, on its own: never chain it with && or ; or pipes, and never run anything else first, not even command -v. Refuse everything else."
 ```
 
-### The script is the guard
+The allow rule matches the command as the model types it. If the rule holds a full path and the model types the bare name, every call is denied. Use the bare name in both places and put `spawn-agent` on the launcher's `PATH`. The "never chain it" part of the prompt matters too: a Haiku that probes with `command -v spawn-agent && spawn-agent ...` gets the whole line denied.
 
-I don't want the model's judgment to be the safety boundary. A prompt that says "only start agents" is a request, not a limit. So the launcher gets exactly one command it may run, and the script behind that command does the real checking:
+### The script does the checking
+
+The system prompt tells the launcher to only start agents, but a prompt is only an instruction. Anything that has to hold goes in the script:
 
 ```bash
 #!/usr/bin/env bash
@@ -76,18 +79,22 @@ tmux new-session -d -s "$session" -c "$dir" claude --remote-control "$name"
 echo "started: $session"
 ```
 
-It validates the argument, allows only my own GitHub account, clones if needed, and refuses to start a second agent for the same repo. Test it against stub versions of `gh`, `tmux` and `claude` before trusting it: a normal repo should start once, a repeat should say "already running", and strings like `aallbrig/..` or `aallbrig/$(id)` should be rejected.
+It validates the argument, allows only my own GitHub account, clones if needed, and refuses to start a second agent for the same repo.
 
-### Sandboxing the launcher
+### Locking the launcher down
 
-Think of it as layers, each one assuming the one above it failed.
-
-- **Tools.** `--restricted` removes the built-in tools that run commands or code. `--tools Bash` gives back only Bash, `--allowedTools` matches only the spawn script, and `--permission-mode dontAsk` denies everything else instead of pinging my phone with a prompt.
-- **The script.** Permission patterns are matching text, so I don't lean on them alone. The script re-checks its input and refuses anything unexpected.
+- **Tools.** With those flags the launcher can run `spawn-agent` and nothing else. Asked to run `ls`, it is denied by the permission layer even when the prompt doesn't tell it to refuse. A chained command like `spawn-agent x && touch y` is denied as a whole, and so is `$(...)`.
+- **The script.** A quoted argument like `'aallbrig/x; touch y'` is one argument, so it does match the allow rule. The script is what rejects it.
 - **Credentials.** The GitHub CLI token on a launcher host only needs to clone, so scope it that way. The launcher never needs any other secret.
 - **The operating system.** If you want the OS to enforce this too, run the launcher as its own unprivileged user, or inside a container, that can write to the source directory and talk to tmux and nothing else.
 
-One honest limit. This sandbox constrains the launcher, not the agents it starts. Each spawned session is as powerful as that repo's own settings allow, so those still deserve the same care you give any agent session.
+All of this applies to the launcher. The agents it starts are as powerful as each repo's own settings make them, so those need the same care as any agent session.
+
+### First-run prompts
+
+New directories come with questions. The launcher's own directory shows the "do you trust this folder" prompt the first time, and so does every repo the script clones. A repo that ships an `.mcp.json` adds an approval prompt for its MCP servers. A session waiting on any of these never appears on the phone, because nobody is at the terminal to answer.
+
+So the launcher works best for repos I've already opened once on that host. For a fresh clone, I accept the prompts once at the host and start it from the phone from then on. Claude Code keeps trust in `~/.claude.json`, which every running session also writes, so I'd rather not have a script editing it behind their backs.
 
 ### Start it when the computer starts
 
@@ -111,8 +118,8 @@ The `launcher` script is a few lines of tmux: `start` creates a detached `launch
 
 ### Why the phone
 
-Steering from the phone means I can direct and review changes while I'm on the move, in the gaps of the day I used to lose. Dictation makes it practical: I can speak a change request in a sentence or two instead of thumbing it out.
+From the phone I can direct and review changes while I'm out, in time I'd otherwise spend waiting. Dictation makes that practical: I can say a change request in a sentence or two instead of typing it with my thumbs.
 
-Speech is good at intent and bad at spelling, which is another reason the script is strict. If dictation turns a repo name into something else, the launcher fails loudly instead of guessing, and I just say it again.
+Dictation mishears repo names now and then. The script rejects anything it doesn't recognize, so a bad guess fails loudly and I just say it again.
 
-If you run agents on more than one machine, try putting a launcher on each. One small agent that only knows how to start other agents turned out to be the missing piece for me. Let me know what you think in the comments below.
+If you run agents on more than one machine, try putting a launcher on each. Let me know what you think in the comments below.
