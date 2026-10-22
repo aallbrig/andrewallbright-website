@@ -27,8 +27,8 @@ fi
 # Judge only the command and subcommand ("post list"), never the arguments, so a post title
 # containing "list" cannot unlock a write.
 head="${1:-} ${2:-}"
-# Nested groups such as "post meta get" are judged on their third word.
-[[ "${2:-}" == "meta" ]] && head="$head ${3:-}"
+# Nested groups such as "post meta get" or "post term list" are judged on their third word.
+[[ "${2:-}" == "meta" || "${2:-}" == "term" ]] && head="$head ${3:-}"
 
 # Never allowed from this harness: DB access/dumps (contact-form PII), config (DB credentials), arbitrary code.
 if [[ "$head" =~ ^(db|config|site\ empty|eval|eval-file|shell|ssh) ]]; then

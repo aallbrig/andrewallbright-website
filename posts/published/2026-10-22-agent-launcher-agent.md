@@ -4,7 +4,8 @@ slug: agent-launcher-agent
 excerpt: One cheap, locked-down agent per host whose only job is to start other agents, so I can spin up new Claude Code sessions from my phone.
 categories: [AI Engineering, Platform Engineering]
 tags: [Agentic Coding, Claude Code, systemd, Linux, Developer Experience]
-status: draft
+status: published
+wp_post_id: 4133
 ---
 
 Ideas for a codebase rarely show up while I'm sitting at the desk. They show up on a walk, in the car, or while I'm waiting on something else.
