@@ -1,0 +1,49 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: '3'
+
+tasks:
+  setup:
+    desc: One-time install of tooling deps and git hooks
+    cmds:
+      - pre-commit install --install-hooks
+
+  lint:
+    desc: All linting (secrets, markdown, shell, yaml)
+    cmds:
+      - pre-commit run --all-files
+
+  format:
+    desc: All formatting (whitespace and EOF fixers)
+    cmds:
+      - pre-commit run end-of-file-fixer --all-files
+      - pre-commit run trailing-whitespace --all-files
+
+  test:
+    desc: All tests
+    cmds:
+      - echo "no tests yet"
+
+  build:
+    desc: Build artifacts (nothing to build yet; kept for the standard interface)
+    cmds:
+      - echo "nothing to build"
+
+  ci:
+    desc: Run every quality gate; needs no live services
+    cmds:
+      - task: lint
+      - task: test
+      - task: build
+
+  dev:
+    desc: Start or attach to the tmuxinator session
+    cmds:
+      - echo "dev session is added in a later step"
+
+  pr:merge:
+    desc: Wait for CI on PR N, then merge (task pr:merge -- N)
+    cmds:
+      - gh pr checks {{.CLI_ARGS}} --watch --fail-fast
+      - gh pr merge {{.CLI_ARGS}} --merge

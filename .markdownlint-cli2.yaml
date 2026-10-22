@@ -1,0 +1,13 @@
+---
+# Blog prose is not hard-wrapped, so line length is not enforced.
+config:
+  default: true
+  MD013: false
+  MD040: true
+  MD033:
+    allowed_elements: [br, img, figure, figcaption]
+globs:
+  - "**/*.md"
+ignores:
+  - node_modules/**
+  - wp-content/**/vendor/**
