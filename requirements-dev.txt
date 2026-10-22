@@ -1,0 +1,4 @@
+# Python dependencies for scripts/ and their tests. Installed by `task setup` and CI.
+markdown>=3.5
+pyyaml>=6.0
+pytest>=8.0
