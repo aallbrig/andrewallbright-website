@@ -106,3 +106,8 @@ def test_self_closing_hr_does_not_break_following_blocks() -> None:
     assert "<!-- wp:heading -->" in html
     assert "<!-- wp:table" in html
     assert "<!-- wp:html -->" not in html
+
+
+def test_hash_comment_inside_code_fence_is_not_a_heading() -> None:
+    text = "---\ntitle: x\nslug: ok\nexcerpt: e\n---\nIntro.\n\n```bash\n# a shell comment\necho hi\n```\n"
+    assert wp_post.parse(text).body.startswith("Intro.")

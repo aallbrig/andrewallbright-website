@@ -30,6 +30,7 @@ REQUIRED = ("title", "slug", "excerpt")
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 FRONTMATTER_RE = re.compile(r"\A---\n(.*?)\n---\n(.*)\Z", re.S)
 VOID = {"br", "hr", "img"}
+FENCED_RE = re.compile(r"^```.*?^```", re.M | re.S)
 EXTERNAL_LINK_RE = re.compile(r'<a href="(https?://[^"]+)"')
 LOCAL_IMAGE_RE = re.compile(r"^!\[[^\]]*\]\((?!https?://)[^)]*\)\n?", re.M)
 
@@ -64,7 +65,7 @@ def parse(text: str) -> Post:
     body = match.group(2).strip()
     if not body:
         raise PostError("post body is empty")
-    if re.search(r"^# ", body, re.M):
+    if re.search(r"^# ", FENCED_RE.sub("", body), re.M):
         raise PostError("body must not contain a level-1 heading; the title is the WordPress title")
     return Post(
         meta=meta,
