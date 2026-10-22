@@ -1,0 +1,16 @@
+title = "andrewallbright-website gitleaks config"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "wordpress-db-password"
+description = "WordPress DB_PASSWORD define"
+regex = '''(?i)define\(\s*['"]DB_PASSWORD['"]\s*,\s*['"][^'"]+['"]'''
+tags = ["wordpress"]
+
+[[rules]]
+id = "wordpress-auth-salt"
+description = "WordPress auth keys and salts"
+regex = '''(?i)define\(\s*['"](AUTH|SECURE_AUTH|LOGGED_IN|NONCE)_(KEY|SALT)['"]\s*,\s*['"][^'"]{16,}['"]'''
+tags = ["wordpress"]

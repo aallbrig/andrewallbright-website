@@ -1,0 +1,16 @@
+---
+name: andrewallbright-website
+root: '<%= ENV["PWD"] %>'
+
+windows:
+  - dev:
+      layout: main-vertical
+      panes:
+        - dev: 'echo "ready - task wp:status, task ci"'
+        - claude: claude
+  - watch:
+      layout: even-vertical
+      panes:
+        - dev: 'echo "ready - restart a watcher with task lint or task test"'
+        - watchexec -e md,yml,py,sh --watch . --restart -- task lint
+        - watchexec -e py --watch scripts --restart -- task test

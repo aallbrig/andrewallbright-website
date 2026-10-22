@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(scripts/wp.sh plugin list*)",
+      "Bash(scripts/wp.sh theme list*)",
+      "Bash(scripts/wp.sh post list*)",
+      "Bash(scripts/wp.sh post get*)",
+      "Bash(scripts/wp.sh post meta get*)",
+      "Bash(scripts/wp.sh term list*)",
+      "Bash(scripts/wp.sh post-type list*)",
+      "Bash(scripts/wp.sh core version*)",
+      "Bash(python3 scripts/wp_post.py check*)",
+      "Bash(python3 scripts/wp_post.py publish * --dry-run*)",
+      "Bash(task *)",
+      "Bash(pre-commit run*)",
+      "Bash(gitleaks *)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(~/.ssh/**)",
+      "Bash(ssh *)",
+      "Bash(scp *)",
+      "Bash(git commit * --no-verify*)",
+      "Bash(git push --force*)"
+    ]
+  }
+}

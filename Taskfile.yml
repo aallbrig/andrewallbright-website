@@ -1,0 +1,67 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: '3'
+
+tasks:
+  setup:
+    desc: One-time install of tooling deps and git hooks
+    cmds:
+      - pre-commit install --install-hooks
+
+  lint:
+    desc: All linting (secrets, markdown, shell, yaml)
+    cmds:
+      - pre-commit run --all-files
+
+  format:
+    desc: All formatting (whitespace and EOF fixers)
+    cmds:
+      - pre-commit run end-of-file-fixer --all-files
+      - pre-commit run trailing-whitespace --all-files
+
+  test:
+    desc: All tests
+    cmds:
+      - python3 -m pytest -q
+
+  build:
+    desc: Build artifacts (nothing to build yet; kept for the standard interface)
+    cmds:
+      - echo "nothing to build"
+
+  ci:
+    desc: Run every quality gate; needs no live services
+    cmds:
+      - task: lint
+      - task: test
+      - task: build
+
+  dev:
+    desc: Start the tmuxinator session, or attach if it is already running
+    cmds:
+      - tmux has-session -t andrewallbright-website 2>/dev/null && tmux attach -t andrewallbright-website || tmuxinator start andrewallbright-website
+
+  dev:attach:
+    desc: Attach to the running session without restarting it
+    cmds:
+      - tmux attach -t andrewallbright-website
+
+  dev:recycle:
+    desc: Kill the session and start a fresh one (run from outside tmux)
+    cmds:
+      - tmux kill-session -t andrewallbright-website 2>/dev/null || true
+      - tmuxinator start andrewallbright-website
+
+  wp:status:
+    desc: Read-only health check of the live site (core version, plugins, theme)
+    cmds:
+      - scripts/wp.sh core version
+      - scripts/wp.sh plugin list --fields=name,status,version
+      - scripts/wp.sh theme list --fields=name,status,version
+
+  pr:merge:
+    desc: Wait for CI on PR N, then merge (task pr:merge -- N)
+    cmds:
+      - gh pr checks {{.CLI_ARGS}} --watch --fail-fast
+      - gh pr merge {{.CLI_ARGS}} --merge
