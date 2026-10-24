@@ -182,7 +182,7 @@ final class PluginTest extends WP_UnitTestCase {
 	 * Saving through the Settings API sanitises.
 	 */
 	public function test_settings_registered_with_sanitize_callback(): void {
-		( new Qr_Share_Settings() )->register_settings();
+		( new Qr_Share_Settings() )->register_option();
 		$registered = get_registered_settings();
 		$this->assertArrayHasKey( Qr_Share_Settings::OPTION, $registered );
 		$clean = apply_filters(
@@ -283,5 +283,26 @@ final class PluginTest extends WP_UnitTestCase {
 	public function test_panel_with_empty_url_renders_nothing(): void {
 		$this->assertSame( '', Qr_Share_Render::panel( '', 192 ) );
 		$this->assertSame( '', Qr_Share_Render::floating( Qr_Share_Settings::defaults(), '' ) );
+	}
+
+	/**
+	 * Writes outside the admin screen (WP-CLI, REST) are sanitised on save, not only on read.
+	 */
+	public function test_update_option_is_sanitised_on_write(): void {
+		update_option(
+			Qr_Share_Settings::OPTION,
+			array(
+				'enabled'  => '1',
+				'position' => 'sideways',
+				'extra'    => 'x',
+			)
+		);
+		$this->assertSame(
+			array(
+				'enabled'  => true,
+				'position' => 'bottom-right',
+			),
+			get_option( Qr_Share_Settings::OPTION )
+		);
 	}
 }
