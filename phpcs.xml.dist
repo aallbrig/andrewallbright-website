@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<ruleset name="andrewallbright-website" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/squizlabs/PHP_CodeSniffer/master/phpcs.xsd">
+	<description>WordPress Coding Standards for the custom plugins and themes. Warnings fail the run.</description>
+
+	<file>wp-content/plugins</file>
+	<file>wp-content/themes</file>
+
+	<exclude-pattern>*/assets/vendor/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+
+	<arg name="extensions" value="php"/>
+	<arg name="colors"/>
+	<arg name="parallel" value="8"/>
+	<arg name="cache" value=".phpcs-cache"/>
+	<arg value="sp"/>
+
+	<!-- Warnings are errors: any warning makes phpcs exit non-zero. -->
+	<config name="ignore_warnings_on_exit" value="0"/>
+	<arg name="warning-severity" value="1"/>
+
+	<rule ref="WordPress"/>
+	<rule ref="WordPress-Extra"/>
+	<rule ref="WordPress-Docs"/>
+
+	<config name="minimum_wp_version" value="7.1"/>
+	<rule ref="PHPCompatibilityWP"/>
+	<config name="testVersion" value="8.3-"/>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="qr-share"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="qr_share"/>
+				<element value="Qr_Share"/>
+				<element value="QR_SHARE"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Tests follow PHPUnit naming, not the WordPress file naming rules. -->
+	<rule ref="WordPress.Files.FileName">
+		<exclude-pattern>*/tests/*</exclude-pattern>
+		<exclude-pattern>*.asset.php</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<exclude-pattern>*/tests/*</exclude-pattern>
+	</rule>
+	<rule ref="Squiz.Commenting.FunctionComment.MissingParamTag">
+		<exclude-pattern>*/tests/*</exclude-pattern>
+	</rule>
+</ruleset>

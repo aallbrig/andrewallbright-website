@@ -1,0 +1,33 @@
+{
+  "name": "aallbrig/andrewallbright-website",
+  "description": "Developer tooling for the custom WordPress plugins and themes of andrewallbright.com",
+  "type": "project",
+  "license": "proprietary",
+  "require-dev": {
+    "dealerdirect/phpcodesniffer-composer-installer": "1.2.1",
+    "phpcompatibility/phpcompatibility-wp": "2.1.8",
+    "phpstan/extension-installer": "1.4.3",
+    "phpstan/phpstan": "2.3.2",
+    "phpunit/phpunit": "9.6.38",
+    "szepeviktor/phpstan-wordpress": "v2.0.4",
+    "wp-coding-standards/wpcs": "3.4.1",
+    "wp-phpunit/wp-phpunit": "7.1.1",
+    "yoast/phpunit-polyfills": "4.0.0"
+  },
+  "config": {
+    "platform": {
+      "php": "8.3.0"
+    },
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "phpstan/extension-installer": true
+    }
+  },
+  "scripts": {
+    "lint:php": "phpcs",
+    "format:php": "phpcbf",
+    "analyse": "phpstan analyse --memory-limit=1G",
+    "test:unit": "QR_SHARE_UNIT_ONLY=1 phpunit --testsuite unit"
+  }
+}

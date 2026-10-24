@@ -1,0 +1,13 @@
+parameters:
+    level: max
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+    paths:
+        - wp-content/plugins
+    excludePaths:
+        analyse:
+            - wp-content/plugins/*/assets/vendor/*
+            - wp-content/plugins/*/tests/*
+    treatPhpDocTypesAsCertain: false
+    checkMissingCallableSignature: true
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true
