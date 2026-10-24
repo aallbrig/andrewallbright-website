@@ -1,0 +1,21 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "qr-share/qr-share",
+	"title": "QR Share",
+	"category": "widgets",
+	"icon": "share",
+	"description": "A QR code of the current page, with copy-link and share buttons.",
+	"textdomain": "qr-share",
+	"attributes": {
+		"size": {
+			"type": "integer",
+			"default": 192
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": true
+	},
+	"editorScript": "file:./editor.js"
+}

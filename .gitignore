@@ -10,3 +10,9 @@ node_modules/
 __pycache__/
 .pytest_cache/
 .ruff_cache/
+vendor/
+dist/
+.phpunit.cache/
+.phpcs-cache
+build/
+coverage/

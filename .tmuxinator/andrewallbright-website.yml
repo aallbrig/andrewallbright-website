@@ -6,11 +6,17 @@ windows:
   - dev:
       layout: main-vertical
       panes:
-        - dev: 'echo "ready - task wp:status, task ci"'
+        - dev: 'echo "ready - task wp:status, task wp:up, task ci"'
         - claude: claude
   - watch:
       layout: even-vertical
       panes:
-        - dev: 'echo "ready - restart a watcher with task lint or task test"'
-        - watchexec -e md,yml,py,sh --watch . --restart -- task lint
+        - dev: 'echo "ready - restart a watcher with task lint, task test or task lint:php"'
+        - watchexec -e md,yml,py,sh --watch . --restart -- task lint:hooks
         - watchexec -e py --watch scripts --restart -- task test
+        - watchexec -e php,js,css,json --watch wp-content --restart -- bash -c 'task lint:php && task lint:js && task test'
+  - wp-logs:
+      layout: even-vertical
+      panes:
+        - dev: 'echo "ready - task wp:up, task wp:down, task wp:reset, task test:wp"'
+        - task wp:logs

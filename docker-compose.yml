@@ -1,0 +1,96 @@
+# Shared local WordPress environment for every plugin and theme under wp-content/.
+# Dev-only: credentials come from the gitignored .env (see .env.example, `task setup`).
+name: andrewallbright-wp
+
+x-wp-env: &wp-env
+  WORDPRESS_DB_HOST: mariadb
+  WORDPRESS_DB_NAME: ${WP_DEV_DB_NAME:?run task setup}
+  WORDPRESS_DB_USER: ${WP_DEV_DB_USER:?run task setup}
+  WORDPRESS_DB_PASSWORD: ${WP_DEV_DB_PASSWORD:?run task setup}
+
+services:
+  mariadb:
+    image: mariadb:11.4.13
+    environment:
+      MARIADB_DATABASE: ${WP_DEV_DB_NAME:?run task setup}
+      MARIADB_USER: ${WP_DEV_DB_USER:?run task setup}
+      MARIADB_PASSWORD: ${WP_DEV_DB_PASSWORD:?run task setup}
+      MARIADB_ROOT_PASSWORD: ${WP_DEV_DB_ROOT_PASSWORD:?run task setup}
+    volumes:
+      - db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  wordpress:
+    build: ./docker
+    image: andrewallbright-wp:7.1.3-php8.3
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:${WP_DEV_PORT:-8080}:80"
+    environment:
+      <<: *wp-env
+      WORDPRESS_DEBUG: "1"
+      WORDPRESS_CONFIG_EXTRA: |
+        define( 'WP_ENVIRONMENT_TYPE', 'local' );
+        define( 'WP_DEBUG_DISPLAY', true );
+        define( 'WP_DEBUG_LOG', false );
+    volumes:
+      - wordpress:/var/www/html
+      - ./wp-content/plugins:/var/www/html/wp-content/plugins
+      - ./wp-content/themes:/var/www/html/wp-content/themes
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -o /dev/null http://localhost/wp-includes/images/blank.gif || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  wpcli:
+    image: wordpress:cli-2.12.0-php8.3
+    profiles: ["tools"]
+    user: "33:33"
+    depends_on:
+      wordpress:
+        condition: service_healthy
+    environment:
+      <<: *wp-env
+      WP_DEV_URL: ${WP_DEV_URL:-http://localhost:8080}
+      WP_DEV_ADMIN_USER: ${WP_DEV_ADMIN_USER:?run task setup}
+      WP_DEV_ADMIN_PASSWORD: ${WP_DEV_ADMIN_PASSWORD:?run task setup}
+      WP_DEV_ADMIN_EMAIL: ${WP_DEV_ADMIN_EMAIL:?run task setup}
+    volumes:
+      - wordpress:/var/www/html
+      - ./wp-content/plugins:/var/www/html/wp-content/plugins
+      - ./wp-content/themes:/var/www/html/wp-content/themes
+      - ./docker:/docker:ro
+      - ./dist:/dist:ro
+
+  # PHPUnit with the WordPress test library. Uses its own database and the core files baked
+  # into the image, so the dev site's data is never touched.
+  phpunit:
+    build: ./docker
+    image: andrewallbright-wp:7.1.3-php8.3
+    profiles: ["tools"]
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    working_dir: /workspace
+    entrypoint: ["bash", "/workspace/docker/run-tests.sh"]
+    environment:
+      WP_CORE_DIR: /usr/src/wordpress
+      WORDPRESS_DB_HOST: mariadb
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: ${WP_DEV_DB_ROOT_PASSWORD:?run task setup}
+      WP_TESTS_DB_NAME: wordpress_test
+      COVERAGE_MIN: ${COVERAGE_MIN:-80}
+    volumes:
+      - .:/workspace
+
+volumes:
+  db:
+  wordpress:

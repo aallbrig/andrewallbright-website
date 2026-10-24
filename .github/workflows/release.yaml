@@ -1,0 +1,33 @@
+---
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Task
+        run: |
+          sh -c "$(curl -fsSL https://taskfile.dev/install.sh)" -- -d -b "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Build the plugin zip
+        run: task build:plugin
+      - name: Check the tag matches the plugin version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: test -f "dist/qr-share-${TAG#v}.zip"
+      - name: Attach the zip to a GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: gh release create "$TAG" dist/*.zip --title "$TAG" --generate-notes

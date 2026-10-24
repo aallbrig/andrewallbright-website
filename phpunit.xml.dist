@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+	bootstrap="wp-content/plugins/qr-share/tests/bootstrap.php"
+	cacheResultFile=".phpunit.cache/test-results"
+	colors="true"
+	convertDeprecationsToExceptions="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	failOnRisky="true"
+	failOnWarning="true"
+	beStrictAboutOutputDuringTests="true"
+	beStrictAboutTestsThatDoNotTestAnything="true"
+>
+	<php>
+		<!-- QR_SHARE_UNIT_ONLY is set by the composer test:unit script -->
+		<ini name="error_reporting" value="-1"/>
+		<ini name="display_errors" value="1"/>
+	</php>
+	<testsuites>
+		<testsuite name="unit">
+			<directory suffix="Test.php">wp-content/plugins/qr-share/tests/unit</directory>
+		</testsuite>
+		<testsuite name="integration">
+			<directory suffix="Test.php">wp-content/plugins/qr-share/tests/integration</directory>
+		</testsuite>
+	</testsuites>
+	<coverage processUncoveredFiles="true">
+		<include>
+			<directory suffix=".php">wp-content/plugins/qr-share/includes</directory>
+		</include>
+	</coverage>
+</phpunit>

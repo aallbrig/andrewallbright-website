@@ -21,8 +21,11 @@ It also holds the future home of custom themes and plugins in `wp-content/`.
 | `portfolio/` | Portfolio project write-ups and screenshots |
 | `pages/` | Home page as markdown. Read `pages/README.md` before editing it |
 | `docs/` | `*_style_guide.md` (voice, plain prose) and `*_tag_audit.md` (categories, tag vocabulary) |
-| `scripts/` | `wp.sh` (guarded wp-cli), `wp_post.py` (markdown to WordPress), `wp_media.sh` (image upload), `screenshot.sh` and `screenshot_webgl.sh`, `gh_tech_scan.py`, `check_links.sh` |
-| `wp-content/themes`, `wp-content/plugins` | Custom theme/plugin code (empty; see `wp-content/TODO.md`) |
+| `scripts/` | `wp.sh` (guarded wp-cli), `wp_post.py` (markdown to WordPress), `wp_media.sh` (image upload), `screenshot.sh` and `screenshot_webgl.sh`, `gh_tech_scan.py`, `check_links.sh`, `install_tools.sh` (composer, actionlint), `dev_env.sh` (WP_DEV_* credentials), `build_plugin.py` (plugin zip) |
+| `wp-content/plugins/qr-share/` | QR Share plugin (PHP in `includes/`, JS/CSS in `assets/`, block in `blocks/`, tests in `tests/`) |
+| `wp-content/themes` | Custom themes (empty); `wp-content/TODO.md` tracks what is left |
+| `docker-compose.yml`, `docker/` | Shared local WordPress 7.1.3 / PHP 8.3 / MariaDB / wp-cli harness and the `test:wp` runner |
+| `composer.json`, `phpcs.xml.dist`, `phpstan.neon.dist`, `phpunit.xml.dist`, `package.json`, `eslint.config.js` | PHP and JS toolchain config for everything under `wp-content/` |
 | `.claude/agents/blog-author.md` | Interview-and-draft agent |
 | `.claude/skills/` | `wp-publish-post`, `wp-ssh`, `portfolio-update` |
 
@@ -30,8 +33,11 @@ It also holds the future home of custom themes and plugins in `wp-content/`.
 
 - Write a post: use the `blog-author` agent, review the draft in `posts/drafts/`, then run the `wp-publish-post` skill.
 - Portfolio, home page and tags: use the `portfolio-update` skill, `pages/README.md` and `docs/*_tag_audit.md`.
-- Quality gates: `task lint`, `task test`, `task ci`. Commit only when they pass.
+- Quality gates: `task lint`, `task test`, `task ci`. Commit only when they pass. `task test:wp` (docker) also runs for plugin changes.
+- Plugins: develop against the local site (`task wp:up`, `task wp:down`, `task wp:reset`), ship with `task build:plugin`. WordPress 7.1.x and PHP 8.3 everywhere.
+- The local site uses the `WP_DEV_*` values in `.env` (made by `task setup`); never reuse production values there.
 - After pushing to `main`, run `gh run list --limit 1` until the CI run shows `success`. Local green does not prove CI green.
+  While GitHub Actions is paused (budget used up), nothing runs remotely: report this step as skipped and never claim CI green. `task pr:merge` needs CI, so ask Andrew before merging another way.
 
 ## Server facts (verified 2026-10-22)
 

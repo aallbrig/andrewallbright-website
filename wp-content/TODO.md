@@ -1,34 +1,23 @@
 # Custom themes and plugins: TODO
 
-The live site runs stock themes and plugins, so nothing custom exists yet.
 `wp-content/themes/` and `wp-content/plugins/` mirror the WordPress directory layout so a
 WordPress developer can find things where they expect them.
-Before the first custom theme or plugin lands, set up the following.
+The shared quality gates, tests, docker environment and plugin zip build are done; see the README.
+`wp-content/plugins/qr-share/` is the first plugin.
 
-## Quality gates (pre-commit)
+## Done
 
-- [ ] PHP formatting: `php-cs-fixer` or `phpcbf`, with the WordPress Coding Standards ruleset
-- [ ] PHP linting: `phpcs` with `WordPress`, `WordPress-Extra` and `WordPress-Docs`, plus `php -l`
-- [ ] Static analysis: PHPStan (level max) with `szepeviktor/phpstan-wordpress`
-- [ ] Warnings as errors: `phpcs --warning-severity=1 --runtime-set ignore_warnings_on_exit 0`, and PHP `error_reporting(E_ALL)` with `WP_DEBUG` on in tests
-- [ ] JS and CSS for block themes: `eslint` and `stylelint` through `@wordpress/scripts`
-- [ ] Wire all of the above into `.pre-commit-config.yaml` and `task lint` / `task format`
+- PHP gates: phpcs (`WordPress`, `WordPress-Extra`, `WordPress-Docs`, warnings fail), `php -l`, PHPStan level max with `szepeviktor/phpstan-wordpress`, `composer audit`
+- JS gates: eslint (strict), prettier, knip (dead code), `npm audit`
+- All of the above in `.pre-commit-config.yaml` and `task lint` / `task format`
+- PHPUnit with wp-phpunit and the Yoast polyfills, `E_ALL` and `WP_DEBUG` on, coverage threshold (`task test:wp`)
+- `docker-compose.yml` with WordPress, MariaDB and wp-cli, plugin and theme mounts, seed script, `task wp:up` / `wp:down` / `wp:reset`
+- Credentials from the gitignored `.env`; only `.env.example` is committed
+- `task build:plugin` zip, `release.yaml` workflow that attaches it to a GitHub Release
 
-## Tests
+## Still open
 
-- [ ] PHPUnit with `wp-phpunit/wp-phpunit` and the Yoast PHPUnit polyfills
-- [ ] Coverage threshold enforced in `task test`
-- [ ] `task test:wp` runs the suite inside the docker environment below
-
-## Isolated test environment
-
-- [ ] `docker-compose.yml` with `wordpress`, `mariadb` and a `wpcli` service
-- [ ] Mount `wp-content/themes` and `wp-content/plugins` into the container
-- [ ] Seed script that installs WordPress, activates the theme or plugin and imports sample content
-- [ ] `task wp:up`, `task wp:down` and `task wp:reset`
-- [ ] Credentials come from a gitignored `.env`; commit only `.env.example`
-
-## Release
-
-- [ ] Build a zip per theme or plugin in CI
-- [ ] Deploy with `wp plugin install <zip>` or `wp theme install <zip>` through `scripts/wp.sh`, never by hand
+- Block themes: `stylelint` through `@wordpress/scripts` once a theme exists (a theme also needs a build and test story)
+- JS coverage threshold: the browser script is tested through jsdom `eval`, which node cannot measure
+- Actions workflows have never run remotely (budget exhausted); run them once and fix what they find
+- Automated deploy with `scripts/wp.sh --confirm plugin install <zip-url>` after a release; manual upload for now

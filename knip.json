@@ -1,0 +1,6 @@
+{
+	"$schema": "https://unpkg.com/knip@6/schema.json",
+	"entry": ["wp-content/plugins/*/tests/js/*.test.js"],
+	"project": ["wp-content/**/*.js"],
+	"ignore": ["wp-content/plugins/*/assets/js/*.js", "wp-content/plugins/*/blocks/*/editor.js"]
+}

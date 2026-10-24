@@ -12,4 +12,7 @@ globs:
   - "**/*.md"
 ignores:
   - node_modules/**
+  - vendor/**
+  - dist/**
+  - build/**
   - wp-content/**/vendor/**
