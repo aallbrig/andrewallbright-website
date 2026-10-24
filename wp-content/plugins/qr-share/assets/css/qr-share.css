@@ -1,0 +1,134 @@
+.qr-share {
+	display: grid;
+	justify-items: center;
+	gap: 0.75rem;
+	max-width: 100%;
+}
+
+.qr-share__code {
+	width: min(var(--qr-share-size, 192px), 100%);
+	aspect-ratio: 1;
+	background: #fff;
+}
+
+.qr-share__code svg {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.qr-share__field {
+	box-sizing: border-box;
+	width: min(100%, 24rem);
+	font: inherit;
+	font-size: 0.875rem;
+}
+
+.qr-share__actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.5rem;
+}
+
+.qr-share button,
+.qr-share-dialog__close {
+	cursor: pointer;
+	font: inherit;
+	padding: 0.5rem 1rem;
+}
+
+.qr-share button[hidden],
+.qr-share-floating__open[hidden] {
+	display: none;
+}
+
+.qr-share__status {
+	min-height: 1.5em;
+	margin: 0;
+	font-size: 0.875rem;
+}
+
+.qr-share-floating__open {
+	position: fixed;
+	z-index: 99990;
+	display: grid;
+	place-items: center;
+	width: 3rem;
+	height: 3rem;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: #1d2327;
+	color: #fff;
+	box-shadow: 0 2px 8px rgb(0 0 0 / 35%);
+	cursor: pointer;
+}
+
+.qr-share-floating__open:focus-visible,
+.qr-share button:focus-visible,
+.qr-share-dialog__close:focus-visible {
+	outline: 3px solid #2271b1;
+	outline-offset: 2px;
+}
+
+.qr-share-floating--bottom-right .qr-share-floating__open {
+	right: 1rem;
+	bottom: 1rem;
+}
+
+.qr-share-floating--bottom-left .qr-share-floating__open {
+	bottom: 1rem;
+	left: 1rem;
+}
+
+.qr-share-floating--top-right .qr-share-floating__open {
+	top: 1rem;
+	right: 1rem;
+}
+
+.qr-share-floating--top-left .qr-share-floating__open {
+	top: 1rem;
+	left: 1rem;
+}
+
+.qr-share-dialog {
+	width: min(24rem, calc(100vw - 2rem));
+	padding: 0;
+	border: 1px solid CanvasText;
+	border-radius: 0.5rem;
+	background: Canvas;
+	color: CanvasText;
+}
+
+.qr-share-dialog::backdrop {
+	background: rgb(0 0 0 / 55%);
+}
+
+.qr-share-dialog__body {
+	display: grid;
+	justify-items: center;
+	gap: 1rem;
+	padding: 1.5rem;
+}
+
+.qr-share-dialog__title {
+	margin: 0;
+	font-size: 1.25rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.qr-share-floating__open {
+		transition: transform 0.15s ease;
+	}
+
+	.qr-share-floating__open:hover {
+		transform: scale(1.08);
+	}
+}
+
+@media print {
+	.qr-share-floating {
+		display: none;
+	}
+}
