@@ -83,6 +83,7 @@ final class Qr_Share_Settings {
 	 */
 	public function register(): void {
 		add_action( 'admin_menu', array( $this, 'add_page' ) );
+		add_action( 'init', array( $this, 'register_option' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 	}
 
@@ -100,19 +101,24 @@ final class Qr_Share_Settings {
 	}
 
 	/**
-	 * Register the option and its fields.
+	 * Register the option and its sanitiser. Runs on init, not only in admin, so values saved
+	 * through WP-CLI or the REST API are sanitised the same way as the settings form.
 	 */
-	public function register_settings(): void {
+	public function register_option(): void {
 		register_setting(
 			self::GROUP,
 			self::OPTION,
 			array(
 				'type'              => 'object',
 				'sanitize_callback' => array( self::class, 'sanitize' ),
-				'default'           => self::defaults(),
 			)
 		);
+	}
 
+	/**
+	 * Register the settings screen sections and fields.
+	 */
+	public function register_settings(): void {
 		add_settings_section( 'qr_share_main', '', '__return_false', self::PAGE );
 
 		add_settings_field(
