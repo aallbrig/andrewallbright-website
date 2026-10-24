@@ -40,9 +40,44 @@ repos:
         language: fail
         files: '(^|/)(\.env(\..*)?|wp-config\.php|id_(rsa|ed25519)[^/]*|[^/]+\.(sql|sql\.gz|pem|key))$'
         exclude: '(^|/)\.env\.example$'
+      - id: php-lint
+        name: php -l (syntax)
+        entry: bash -c 'for f in "$@"; do php -l "$f" || exit 1; done' --
+        language: system
+        types: [php]
+      - id: phpcs
+        name: phpcs (WordPress standards, warnings fail)
+        entry: vendor/bin/phpcs
+        language: system
+        files: '^wp-content/.*\.php$'
+        require_serial: true
+      - id: phpstan
+        name: phpstan (level max)
+        entry: vendor/bin/phpstan analyse --memory-limit=1G --no-progress
+        language: system
+        pass_filenames: false
+        files: '(\.php|phpstan\.neon\.dist)$'
+      - id: eslint
+        name: eslint (strict, no warnings)
+        entry: npx eslint --max-warnings 0
+        language: system
+        files: '\.js$'
+        exclude: '/assets/vendor/'
+      - id: prettier
+        name: prettier --check
+        entry: npx prettier --check
+        language: system
+        files: '\.(js|css|json)$'
+        exclude: '(/assets/vendor/|package-lock\.json|composer\.lock)'
+      - id: actionlint
+        name: actionlint (workflows)
+        entry: bash -c 'command -v actionlint >/dev/null || { echo "actionlint not installed (task setup installs it); skipping"; exit 0; }; actionlint'
+        language: system
+        pass_filenames: false
+        files: '^\.github/workflows/'
       - id: pytest
         name: pytest
         entry: python3 -m pytest -q
         language: system
         pass_filenames: false
-        files: '^(scripts/.*\.py|Taskfile\.yml|README\.md|CLAUDE\.md|\.github/.*)$'
+        files: '^(scripts/.*\.py|wp-content/plugins/.*|Taskfile\.yml|README\.md|CLAUDE\.md|\.github/.*)$'
