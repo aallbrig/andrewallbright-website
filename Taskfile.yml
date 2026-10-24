@@ -5,36 +5,84 @@ version: '3'
 
 tasks:
   setup:
-    desc: One-time install of tooling deps and git hooks
+    desc: One-time install of tooling deps, composer, actionlint, git hooks and dev credentials
     cmds:
-      - python3 -m pip install -r requirements-dev.txt
+      - python3 -m pip install -r requirements-dev.txt || python3 -c 'import markdown, yaml, pytest'
+      - scripts/install_tools.sh
+      - composer install --no-interaction
+      - npm ci
+      - scripts/dev_env.sh
       - pre-commit install --install-hooks
 
   lint:
-    desc: All linting (secrets, markdown, shell, yaml)
+    desc: All linting (secrets, markdown, shell, yaml, PHP, JS, workflows)
+    cmds:
+      - task: lint:hooks
+      - task: lint:php
+      - task: lint:js
+
+  lint:hooks:
+    desc: Every pre-commit hook on all files (gitleaks, markdown, shell, python, php, js, workflows)
     cmds:
       - pre-commit run --all-files
 
+  lint:php:
+    desc: PHP lint, WordPress coding standards (warnings fail) and PHPStan level max
+    cmds:
+      - composer validate --strict --no-check-lock
+      - composer audit
+      - vendor/bin/phpcs
+      - vendor/bin/phpstan analyse --memory-limit=1G --no-progress
+
+  lint:js:
+    desc: ESLint, Prettier check, dead-code check (knip) and npm audit
+    cmds:
+      - npx eslint --max-warnings 0 .
+      - npx prettier --check .
+      - npx knip
+      - npm audit --audit-level=low
+
+  lint:workflows:
+    desc: Validate GitHub Actions workflows offline with actionlint
+    cmds:
+      - actionlint
+
   format:
-    desc: All formatting (whitespace and EOF fixers)
+    desc: All formatting (whitespace and EOF fixers, phpcbf, prettier)
     cmds:
       - pre-commit run end-of-file-fixer --all-files
       - pre-commit run trailing-whitespace --all-files
+      - vendor/bin/phpcbf || true
+      - npx prettier --write .
 
   test:
-    desc: All tests
+    desc: All tests that need no docker (python, PHP unit, JS)
     cmds:
       - python3 -m pytest -q
+      - composer test:unit
+      - npm test --silent
+
+  test:wp:
+    desc: PHPUnit unit + integration suites inside docker, with coverage threshold
+    cmds:
+      - docker compose up -d --wait mariadb
+      - docker compose run --rm --build --user "$(id -u):$(id -g)" phpunit
 
   build:
-    desc: Build artifacts (nothing to build yet; kept for the standard interface)
+    desc: Build artifacts (the plugin zip)
     cmds:
-      - echo "nothing to build"
+      - task: build:plugin
+
+  build:plugin:
+    desc: Build dist/qr-share-<version>.zip (no tests or dev files)
+    cmds:
+      - python3 scripts/build_plugin.py qr-share
 
   ci:
     desc: Run every quality gate; needs no live services
     cmds:
       - task: lint
+      - task: lint:workflows
       - task: test
       - task: build
 
@@ -65,6 +113,28 @@ tasks:
       - scripts/wp.sh core version
       - scripts/wp.sh plugin list --fields=name,status,version
       - scripts/wp.sh theme list --fields=name,status,version
+
+  wp:up:
+    desc: Start the local WordPress (docker), seed it, and print the URL
+    cmds:
+      - docker compose up -d --build --wait wordpress
+      - docker compose run --rm wpcli sh /docker/seed.sh
+
+  wp:down:
+    desc: Stop the local WordPress; data volumes are kept
+    cmds:
+      - docker compose --profile tools down
+
+  wp:reset:
+    desc: Stop the local WordPress and wipe its volumes (database and uploads), then start fresh
+    cmds:
+      - docker compose --profile tools down --volumes
+      - task: wp:up
+
+  wp:logs:
+    desc: Follow the docker compose logs
+    cmds:
+      - docker compose logs -f --tail=100
 
   pr:merge:
     desc: Wait for CI on PR N, then merge (task pr:merge -- N)

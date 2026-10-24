@@ -8,7 +8,12 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
-DOCS = [ROOT / "README.md", ROOT / "CLAUDE.md", ROOT / ".github" / "workflows" / "ci.yaml"]
+DOCS = [
+    ROOT / "README.md",
+    ROOT / "CLAUDE.md",
+    ROOT / "wp-content" / "TODO.md",
+    *sorted((ROOT / ".github" / "workflows").glob("*.yaml")),
+]
 
 
 def test_documented_tasks_exist() -> None:
